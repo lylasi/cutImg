@@ -121,7 +121,7 @@ async function cutImage(
           width: croppedWidth,
           height: croppedHeight,
         })
-        .png()
+        .png({ quality: 100, compressionLevel: 9 }) // 最高质量无损压缩
         .toFile(tempCroppedPath);
 
       // 使用裁剪后的图片进行后续处理
@@ -154,7 +154,7 @@ async function cutImage(
             width: cellWidth,
             height: cellHeight,
           })
-          .png()
+          .png({ quality: 100, compressionLevel: 9 }) // 最高质量无损压缩
           .toFile(outputPath);
 
         cutPromises.push(cutPromise);

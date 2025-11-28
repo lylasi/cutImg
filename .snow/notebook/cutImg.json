@@ -1,6 +1,13 @@
 {
   "public/index.html": [
     {
+      "id": "notebook-1764312554056_ys37ffp46",
+      "filePath": "public/index.html",
+      "note": "✨ 新增图片点击预览功能：点击裁剪结果图片可全屏预览，支持ESC键/点击背景关闭，带动画效果",
+      "createdAt": "2025-11-28T14:49:14.056",
+      "updatedAt": "2025-11-28T14:49:14.056"
+    },
+    {
       "id": "notebook-1764298762337_6dzggr38l",
       "filePath": "public/index.html",
       "note": "✅ 已添加快捷规格预设按钮（6×4/7×5/8×4/5×5），支持动态行列数输入和实时预览更新",
@@ -16,6 +23,13 @@
     }
   ],
   "server.js": [
+    {
+      "id": "notebook-1764312522176_xtkmf16hf",
+      "filePath": "server.js",
+      "note": "✅ 已启用最高质量图像处理：Sharp使用quality:100 + compressionLevel:9配置，确保PNG无损高清裁剪",
+      "createdAt": "2025-11-28T14:48:42.176",
+      "updatedAt": "2025-11-28T14:48:42.176"
+    },
     {
       "id": "notebook-1764298762336_uyc6n3ska",
       "filePath": "server.js",
