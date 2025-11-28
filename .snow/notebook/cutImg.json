@@ -1,0 +1,27 @@
+{
+  "public/index.html": [
+    {
+      "id": "notebook-1764298762337_6dzggr38l",
+      "filePath": "public/index.html",
+      "note": "✅ 已添加快捷规格预设按钮（6×4/7×5/8×4/5×5），支持动态行列数输入和实时预览更新",
+      "createdAt": "2025-11-28T10:59:22.337",
+      "updatedAt": "2025-11-28T10:59:22.337"
+    },
+    {
+      "id": "notebook-1764297609281_dkogd98bj",
+      "filePath": "public/index.html",
+      "note": "✨ 新增功能：1. Ctrl+V粘贴图片功能（监听paste事件）2. 剪切预览（Canvas绘制网格线）3. 实时调整行列数会重新渲染预览 4. 优化的小图预览展示",
+      "createdAt": "2025-11-28T10:40:09.281",
+      "updatedAt": "2025-11-28T10:40:09.281"
+    }
+  ],
+  "server.js": [
+    {
+      "id": "notebook-1764298762336_uyc6n3ska",
+      "filePath": "server.js",
+      "note": "✅ 已支持动态行列数：后端兼容marginTop/cropTop两种参数名，支持任意规格（如6×4、7×5、8×4等）的表情版剪切",
+      "createdAt": "2025-11-28T10:59:22.336",
+      "updatedAt": "2025-11-28T10:59:22.336"
+    }
+  ]
+}

@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>表情包剪切工具 - Emoji Cutter</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+        color: #333;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .header {
+        text-align: center;
+        color: white;
+        margin-bottom: 40px;
+      }
+
+      .header h1 {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+      }
+
+      .header p {
+        font-size: 1.1em;
+        opacity: 0.9;
+      }
+
+      .header .tip {
+        font-size: 0.9em;
+        margin-top: 10px;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 8px 15px;
+        border-radius: 20px;
+        display: inline-block;
+      }
+
+      .card {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        margin-bottom: 30px;
+      }
+
+      .upload-area {
+        border: 3px dashed #667eea;
+        border-radius: 15px;
+        padding: 60px 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        background: #f8f9ff;
+      }
+
+      .upload-area:hover {
+        border-color: #764ba2;
+        background: #f0f2ff;
+      }
+
+      .upload-area.dragover {
+        border-color: #4caf50;
+        background: #e8f5e9;
+      }
+
+      .upload-icon {
+        font-size: 4em;
+        margin-bottom: 20px;
+      }
+
+      .upload-area h3 {
+        color: #667eea;
+        margin-bottom: 10px;
+        font-size: 1.5em;
+      }
+
+      .upload-area p {
+        color: #666;
+        font-size: 0.95em;
+        margin-bottom: 5px;
+      }
+
+      .upload-area .paste-tip {
+        color: #4caf50;
+        font-weight: 600;
+        margin-top: 15px;
+        font-size: 1em;
+      }
+
+      #fileInput {
+        display: none;
+      }
+
+      .settings {
+        margin-top: 30px;
+        padding: 20px;
+        background: #f8f9ff;
+        border-radius: 10px;
+      }
+
+      .settings h4 {
+        margin-bottom: 15px;
+        color: #667eea;
+      }
+
+      .setting-row {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+
+      .setting-row label {
+        font-weight: 500;
+        min-width: 60px;
+      }
+
+      .setting-row input[type="number"] {
+        width: 80px;
+        padding: 8px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        font-size: 1em;
+      }
+
+      /* 预设规格按钮 */
+      .preset-buttons {
+        margin-top: 12px;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .preset-btn {
+        padding: 6px 12px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.85em;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .preset-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .preset-btn:active {
+        transform: translateY(0);
+      }
+
+      /* 预览区域样式 */
+      .preview-section {
+        display: none;
+      }
+
+      .preview-section.show {
+        display: block;
+      }
+
+      .preview-container {
+        background: #f8f9ff;
+        border-radius: 15px;
+        padding: 30px;
+        margin-bottom: 20px;
+      }
+
+      .preview-header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .preview-header h3 {
+        color: #667eea;
+        font-size: 1.5em;
+        margin-bottom: 10px;
+      }
+
+      .preview-header p {
+        color: #666;
+        font-size: 0.95em;
+      }
+
+      .canvas-container {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        overflow: auto;
+      }
+
+      #previewCanvas {
+        max-width: 100%;
+        height: auto;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .preview-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 20px;
+      }
+
+      /* 边距调整控制样式 */
+      .margin-controls {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        border: 2px solid #e0e0e0;
+      }
+
+      .margin-controls h4 {
+        color: #667eea;
+        margin-bottom: 15px;
+        font-size: 1.1em;
+      }
+
+      .margin-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        margin-bottom: 15px;
+      }
+
+      .margin-item {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .margin-item label {
+        font-size: 0.95em;
+        color: #333;
+        font-weight: 500;
+      }
+
+      .margin-item label span {
+        color: #667eea;
+        font-weight: 700;
+      }
+
+      .margin-item input[type="range"] {
+        width: 100%;
+        height: 6px;
+        border-radius: 3px;
+        background: #e0e0e0;
+        outline: none;
+        -webkit-appearance: none;
+      }
+
+      .margin-item input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        cursor: pointer;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      }
+
+      .margin-item input[type="range"]::-moz-range-thumb {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        cursor: pointer;
+        border: none;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      }
+
+      .btn-reset {
+        padding: 8px 20px;
+        background: #f0f2ff;
+        color: #667eea;
+        border: 2px solid #667eea;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 0.9em;
+        font-weight: 600;
+        transition: all 0.3s;
+      }
+
+      .btn-reset:hover {
+        background: #667eea;
+        color: white;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 12px 30px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        font-size: 1em;
+        font-weight: 600;
+        transition: all 0.3s;
+        text-decoration: none;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+      }
+
+      .btn:active {
+        transform: translateY(0);
+      }
+
+      .btn-success {
+        background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+        box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+      }
+
+      .btn-success:hover {
+        box-shadow: 0 6px 20px rgba(76, 175, 80, 0.6);
+      }
+
+      .btn-secondary {
+        background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+        box-shadow: 0 4px 15px rgba(108, 117, 125, 0.4);
+      }
+
+      .btn-secondary:hover {
+        box-shadow: 0 6px 20px rgba(108, 117, 125, 0.6);
+      }
+
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .loading {
+        display: none;
+        text-align: center;
+        padding: 20px;
+      }
+
+      .loading.show {
+        display: block;
+      }
+
+      .spinner {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #667eea;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 15px;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .result {
+        display: none;
+      }
+
+      .result.show {
+        display: block;
+      }
+
+      .result-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #eee;
+      }
+
+      .result-header h3 {
+        color: #667eea;
+        font-size: 1.5em;
+      }
+
+      .result-info {
+        color: #666;
+        font-size: 0.95em;
+      }
+
+      .preview-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .preview-item {
+        background: #f8f9ff;
+        border-radius: 10px;
+        padding: 10px;
+        text-align: center;
+        transition: all 0.3s;
+        border: 2px solid transparent;
+        position: relative;
+      }
+
+      .preview-item:hover {
+        border-color: #667eea;
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .preview-item img {
+        width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        background: white;
+        border: 1px solid #eee;
+      }
+
+      .preview-item .item-name {
+        font-size: 0.85em;
+        color: #666;
+        margin-bottom: 8px;
+        font-weight: 500;
+      }
+
+      .preview-item .btn {
+        padding: 6px 15px;
+        font-size: 0.85em;
+        width: 100%;
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 30px;
+      }
+
+      .alert {
+        padding: 15px 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        display: none;
+      }
+
+      .alert.show {
+        display: block;
+      }
+
+      .alert-success {
+        background: #d4edda;
+        color: #155724;
+        border-left: 4px solid #28a745;
+      }
+
+      .alert-error {
+        background: #f8d7da;
+        color: #721c24;
+        border-left: 4px solid #dc3545;
+      }
+
+      .alert-info {
+        background: #d1ecf1;
+        color: #0c5460;
+        border-left: 4px solid #17a2b8;
+      }
+
+      @media (max-width: 768px) {
+        .header h1 {
+          font-size: 1.8em;
+        }
+
+        .card {
+          padding: 20px;
+        }
+
+        .preview-grid {
+          grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+          gap: 10px;
+        }
+
+        .action-buttons,
+        .preview-actions {
+          flex-direction: column;
+        }
+
+        .preview-container {
+          padding: 15px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🎨 表情包剪切工具</h1>
+        <p>轻松将表情版图分割成单张表情包</p>
+        <div class="tip">💡 支持 Ctrl+V 直接粘贴图片</div>
+      </div>
+
+      <div class="card">
+        <div id="alertBox" class="alert"></div>
+
+        <!-- 上传区域 -->
+        <div id="uploadSection">
+          <div class="upload-area" id="uploadArea">
+            <div class="upload-icon">📤</div>
+            <h3>点击或拖拽上传表情版图</h3>
+            <p>支持 JPG、PNG、GIF、WebP 格式，最大 10MB</p>
+            <p class="paste-tip">⌨️ 或按 Ctrl+V 直接粘贴图片</p>
+            <input type="file" id="fileInput" accept="image/*" />
+          </div>
+
+          <div class="settings">
+            <h4>⚙️ 剪切设置</h4>
+            <div class="setting-row">
+              <label>列数：</label>
+              <input type="number" id="colsInput" value="6" min="1" max="20" />
+              <label>行数：</label>
+              <input type="number" id="rowsInput" value="4" min="1" max="20" />
+              <span style="color: #666; margin-left: 10px" id="countDisplay">
+                (当前: 6列×4行 = 24张)
+              </span>
+            </div>
+            <div class="preset-buttons">
+              <span style="color: #888; font-size: 0.9em; margin-right: 8px"
+                >📋 常用规格：</span
+              >
+              <button class="preset-btn" onclick="setPreset(6, 4)">
+                6×4 标准版 (24张)
+              </button>
+              <button class="preset-btn" onclick="setPreset(7, 5)">
+                7×5 加强版 (35张)
+              </button>
+              <button class="preset-btn" onclick="setPreset(8, 4)">
+                8×4 宽屏版 (32张)
+              </button>
+              <button class="preset-btn" onclick="setPreset(5, 5)">
+                5×5 方形版 (25张)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 剪切预览区域 -->
+        <div id="previewSection" class="preview-section">
+          <div class="preview-container">
+            <div class="preview-header">
+              <h3>🔍 剪切预览</h3>
+              <p>红色网格线显示将被剪切的位置，蓝色虚线为裁剪边界</p>
+            </div>
+
+            <!-- 边距调整控制 -->
+            <div class="margin-controls">
+              <h4>✂️ 边距裁剪 (调整滑块去除留白)</h4>
+              <div class="margin-grid">
+                <div class="margin-item">
+                  <label>⬆️ 上边距: <span id="topValue">0</span>px</label>
+                  <input
+                    type="range"
+                    id="marginTop"
+                    min="0"
+                    max="200"
+                    value="0"
+                    step="1"
+                  />
+                </div>
+                <div class="margin-item">
+                  <label>⬇️ 下边距: <span id="bottomValue">0</span>px</label>
+                  <input
+                    type="range"
+                    id="marginBottom"
+                    min="0"
+                    max="200"
+                    value="0"
+                    step="1"
+                  />
+                </div>
+                <div class="margin-item">
+                  <label>⬅️ 左边距: <span id="leftValue">0</span>px</label>
+                  <input
+                    type="range"
+                    id="marginLeft"
+                    min="0"
+                    max="200"
+                    value="0"
+                    step="1"
+                  />
+                </div>
+                <div class="margin-item">
+                  <label>➡️ 右边距: <span id="rightValue">0</span>px</label>
+                  <input
+                    type="range"
+                    id="marginRight"
+                    min="0"
+                    max="200"
+                    value="0"
+                    step="1"
+                  />
+                </div>
+              </div>
+              <button class="btn-reset" onclick="resetMargins()">
+                🔄 重置边距
+              </button>
+            </div>
+
+            <div class="canvas-container">
+              <canvas id="previewCanvas"></canvas>
+            </div>
+            <div class="preview-actions">
+              <button class="btn btn-success" onclick="confirmCut()">
+                ✂️ 确认剪切
+              </button>
+              <button class="btn btn-secondary" onclick="cancelPreview()">
+                ❌ 取消
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 加载中 -->
+        <div id="loadingSection" class="loading">
+          <div class="spinner"></div>
+          <p>正在处理图片，请稍候...</p>
+        </div>
+
+        <!-- 结果展示 -->
+        <div id="resultSection" class="result">
+          <div class="result-header">
+            <div>
+              <h3>✅ 剪切完成</h3>
+              <p class="result-info">
+                共生成 <strong id="emojiCount">0</strong> 张表情
+              </p>
+            </div>
+            <button class="btn" onclick="resetUpload()">🔄 重新上传</button>
+          </div>
+
+          <div class="preview-grid" id="previewGrid"></div>
+
+          <div class="action-buttons">
+            <button class="btn btn-success" onclick="downloadAll()">
+              📦 打包下载全部 (ZIP)
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div
+        style="text-align: center; color: white; margin-top: 20px; opacity: 0.8"
+      >
+        <p>Powered by Sharp.js & Express.js | Made with ❤️</p>
+      </div>
+    </div>
+
+    <script>
+      let currentSessionId = null;
+      let currentImageFile = null;
+
+      const uploadArea = document.getElementById("uploadArea");
+      const fileInput = document.getElementById("fileInput");
+      const uploadSection = document.getElementById("uploadSection");
+      const previewSection = document.getElementById("previewSection");
+      const loadingSection = document.getElementById("loadingSection");
+      const resultSection = document.getElementById("resultSection");
+      const alertBox = document.getElementById("alertBox");
+      const previewGrid = document.getElementById("previewGrid");
+      const emojiCount = document.getElementById("emojiCount");
+      const colsInput = document.getElementById("colsInput");
+      const rowsInput = document.getElementById("rowsInput");
+      const previewCanvas = document.getElementById("previewCanvas");
+      const ctx = previewCanvas.getContext("2d");
+
+      // 边距控制元素
+      const marginTop = document.getElementById("marginTop");
+      const marginBottom = document.getElementById("marginBottom");
+      const marginLeft = document.getElementById("marginLeft");
+      const marginRight = document.getElementById("marginRight");
+      const topValue = document.getElementById("topValue");
+      const bottomValue = document.getElementById("bottomValue");
+      const leftValue = document.getElementById("leftValue");
+      const rightValue = document.getElementById("rightValue");
+
+      let currentImage = null; // 保存当前图片用于重绘
+
+      // 点击上传
+      uploadArea.addEventListener("click", () => {
+        fileInput.click();
+      });
+
+      // 文件选择
+      fileInput.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          handleImageFile(file);
+        }
+      });
+
+      // 拖拽上传
+      uploadArea.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        uploadArea.classList.add("dragover");
+      });
+
+      uploadArea.addEventListener("dragleave", () => {
+        uploadArea.classList.remove("dragover");
+      });
+
+      uploadArea.addEventListener("drop", (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove("dragover");
+
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith("image/")) {
+          handleImageFile(file);
+        } else {
+          showAlert("请上传图片文件", "error");
+        }
+      });
+
+      // 粘贴功能 - 核心新功能！
+      document.addEventListener("paste", (e) => {
+        const items = e.clipboardData.items;
+
+        for (let i = 0; i < items.length; i++) {
+          if (items[i].type.indexOf("image") !== -1) {
+            const blob = items[i].getAsFile();
+            handleImageFile(blob);
+            showAlert("✅ 已从剪贴板粘贴图片", "info");
+            break;
+          }
+        }
+      });
+
+      // 处理图片文件 - 显示预览
+      function handleImageFile(file) {
+        if (!file.type.startsWith("image/")) {
+          showAlert("请选择图片文件", "error");
+          return;
+        }
+
+        currentImageFile = file;
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            showPreview(img);
+          };
+          img.src = e.target.result;
+        };
+
+        reader.readAsDataURL(file);
+      }
+
+      // 边距滑块事件监听
+      marginTop.addEventListener("input", (e) => {
+        topValue.textContent = e.target.value;
+        if (currentImage) redrawPreview();
+      });
+
+      marginBottom.addEventListener("input", (e) => {
+        bottomValue.textContent = e.target.value;
+        if (currentImage) redrawPreview();
+      });
+
+      marginLeft.addEventListener("input", (e) => {
+        leftValue.textContent = e.target.value;
+        if (currentImage) redrawPreview();
+      });
+
+      marginRight.addEventListener("input", (e) => {
+        rightValue.textContent = e.target.value;
+        if (currentImage) redrawPreview();
+      });
+
+      // 重置边距
+      function resetMargins() {
+        marginTop.value = 0;
+        marginBottom.value = 0;
+        marginLeft.value = 0;
+        marginRight.value = 0;
+        topValue.textContent = 0;
+        bottomValue.textContent = 0;
+        leftValue.textContent = 0;
+        rightValue.textContent = 0;
+        if (currentImage) redrawPreview();
+      }
+
+      // 重绘预览
+      function redrawPreview() {
+        if (currentImage) {
+          showPreview(currentImage);
+        }
+      }
+
+      // 显示剪切预览
+      function showPreview(img) {
+        currentImage = img; // 保存图片引用
+
+        const cols = parseInt(colsInput.value) || 6;
+        const rows = parseInt(rowsInput.value) || 4;
+
+        // 获取边距值（原始图片尺寸的像素）
+        const mt = parseInt(marginTop.value) || 0;
+        const mb = parseInt(marginBottom.value) || 0;
+        const ml = parseInt(marginLeft.value) || 0;
+        const mr = parseInt(marginRight.value) || 0;
+
+        // 计算缩放比例
+        const maxWidth = 800;
+        const scale = img.width > maxWidth ? maxWidth / img.width : 1;
+
+        // Canvas显示尺寸
+        const canvasWidth = img.width * scale;
+        const canvasHeight = img.height * scale;
+
+        previewCanvas.width = canvasWidth;
+        previewCanvas.height = canvasHeight;
+
+        // 绘制完整图片
+        ctx.drawImage(img, 0, 0, canvasWidth, canvasHeight);
+
+        // 绘制裁剪边界（蓝色虚线）
+        const scaledMt = mt * scale;
+        const scaledMb = mb * scale;
+        const scaledMl = ml * scale;
+        const scaledMr = mr * scale;
+
+        ctx.strokeStyle = "#2196F3";
+        ctx.lineWidth = 2;
+        ctx.setLineDash([10, 5]);
+
+        // 绘制裁剪矩形
+        ctx.strokeRect(
+          scaledMl,
+          scaledMt,
+          canvasWidth - scaledMl - scaledMr,
+          canvasHeight - scaledMt - scaledMb
+        );
+
+        ctx.setLineDash([]); // 恢复实线
+
+        // 计算有效区域（裁剪后的区域）
+        const effectiveWidth = canvasWidth - scaledMl - scaledMr;
+        const effectiveHeight = canvasHeight - scaledMt - scaledMb;
+
+        // 绘制网格线（红色）- 在有效区域内
+        const cellWidth = effectiveWidth / cols;
+        const cellHeight = effectiveHeight / rows;
+
+        ctx.strokeStyle = "#ff0000";
+        ctx.lineWidth = 2;
+
+        // 绘制垂直线
+        for (let i = 1; i < cols; i++) {
+          ctx.beginPath();
+          ctx.moveTo(scaledMl + i * cellWidth, scaledMt);
+          ctx.lineTo(scaledMl + i * cellWidth, canvasHeight - scaledMb);
+          ctx.stroke();
+        }
+
+        // 绘制水平线
+        for (let i = 1; i < rows; i++) {
+          ctx.beginPath();
+          ctx.moveTo(scaledMl, scaledMt + i * cellHeight);
+          ctx.lineTo(canvasWidth - scaledMr, scaledMt + i * cellHeight);
+          ctx.stroke();
+        }
+
+        // 显示预览区域，隐藏上传区域
+        uploadSection.style.display = "none";
+        previewSection.classList.add("show");
+        alertBox.classList.remove("show");
+      }
+
+      // 确认剪切
+      async function confirmCut() {
+        if (!currentImageFile) return;
+
+        const formData = new FormData();
+        formData.append("image", currentImageFile);
+        formData.append("cols", colsInput.value);
+        formData.append("rows", rowsInput.value);
+
+        // 添加边距参数
+        formData.append("marginTop", marginTop.value);
+        formData.append("marginBottom", marginBottom.value);
+        formData.append("marginLeft", marginLeft.value);
+        formData.append("marginRight", marginRight.value);
+
+        previewSection.classList.remove("show");
+        loadingSection.classList.add("show");
+
+        try {
+          const response = await fetch("/upload", {
+            method: "POST",
+            body: formData,
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            currentSessionId = data.data.sessionId;
+            showResult(data.data);
+            showAlert(data.message, "success");
+          } else {
+            throw new Error(data.error || "上传失败");
+          }
+        } catch (error) {
+          showAlert("处理失败: " + error.message, "error");
+          uploadSection.style.display = "block";
+        } finally {
+          loadingSection.classList.remove("show");
+        }
+      }
+
+      // 取消预览
+      function cancelPreview() {
+        previewSection.classList.remove("show");
+        uploadSection.style.display = "block";
+        currentImageFile = null;
+        fileInput.value = "";
+      }
+
+      // 显示结果
+      function showResult(data) {
+        emojiCount.textContent = data.count;
+        previewGrid.innerHTML = "";
+
+        data.files.forEach((fileName, index) => {
+          const item = document.createElement("div");
+          item.className = "preview-item";
+
+          const imgUrl = `/output/${data.sessionId}/${fileName}`;
+
+          item.innerHTML = `
+          <img src="${imgUrl}" alt="${fileName}" loading="lazy">
+          <div class="item-name">${fileName}</div>
+          <button class="btn" onclick="downloadSingle('${data.sessionId}', '${fileName}')">
+            ⬇️ 下载
+          </button>
+        `;
+
+          previewGrid.appendChild(item);
+        });
+
+        resultSection.classList.add("show");
+      }
+
+      // 下载单张
+      function downloadSingle(sessionId, fileName) {
+        const url = `/download/${sessionId}/${fileName}`;
+        window.open(url, "_blank");
+      }
+
+      // 下载全部
+      function downloadAll() {
+        if (!currentSessionId) return;
+        const url = `/download-all/${currentSessionId}`;
+        window.open(url, "_blank");
+      }
+
+      // 重置上传
+      function resetUpload() {
+        fileInput.value = "";
+        currentImageFile = null;
+        currentSessionId = null;
+        uploadSection.style.display = "block";
+        previewSection.classList.remove("show");
+        resultSection.classList.remove("show");
+        alertBox.classList.remove("show");
+      }
+
+      // 显示提示
+      function showAlert(message, type) {
+        alertBox.textContent = message;
+        alertBox.className = "alert alert-" + type + " show";
+      }
+
+      // 自动计算总数
+      colsInput.addEventListener("input", updateCount);
+      rowsInput.addEventListener("input", updateCount);
+
+      function updateCount() {
+        const cols = parseInt(colsInput.value) || 6;
+        const rows = parseInt(rowsInput.value) || 4;
+        const total = cols * rows;
+        document.getElementById(
+          "countDisplay"
+        ).textContent = `(当前: ${cols}列×${rows}行 = ${total}张)`;
+
+        // 如果正在预览，重新绘制网格
+        if (previewSection.classList.contains("show") && currentImageFile) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+              showPreview(img);
+            };
+            img.src = e.target.result;
+          };
+          reader.readAsDataURL(currentImageFile);
+        }
+      }
+
+      // 设置预设规格
+      function setPreset(cols, rows) {
+        colsInput.value = cols;
+        rowsInput.value = rows;
+        updateCount();
+      }
+
+      // 页面加载完成提示
+      window.addEventListener("load", () => {
+        // 初始化显示当前计数
+        updateCount();
+        console.log(
+          "%c🎨 表情包剪切工具已就绪！",
+          "color: #667eea; font-size: 16px; font-weight: bold;"
+        );
+        console.log(
+          "%c💡 使用技巧：",
+          "color: #4CAF50; font-size: 14px; font-weight: bold;"
+        );
+        console.log("  1. 点击或拖拽上传图片");
+        console.log("  2. 使用 Ctrl+V 粘贴剪贴板中的图片");
+        console.log("  3. 调整行列数以适应不同的表情版图");
+        console.log("  4. 预览剪切效果后确认");
+      });
+    </script>
+  </body>
+</html>
