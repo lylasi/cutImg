@@ -1,0 +1,229 @@
+╔════════════════════════════════════════════════════════════════╗
+║          表情包剪切工具 - 依赖安装快速修复指南                ║
+╚════════════════════════════════════════════════════════════════╝
+
+✅ 当前状态检查（2025-11-28）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Windows 本地环境 (d:/CODE/cutImg)：
+  ✅ express - 已安装并验证
+  ✅ multer - 已安装并验证  
+  ✅ sharp - 已安装并验证
+  ✅ archiver - 已安装并验证
+  ✅ PM2 - 已配置并运行（端口 7788）
+  
+👉 本地环境可以正常使用！
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔧 Linux 服务器环境修复（/ql/data/scripts/cutImg/）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+问题：Cannot find module 'sharp'
+原因：服务器环境缺少 node_modules 依赖
+
+【快速修复 - 3 步骤】
+
+1️⃣ SSH 连接服务器
+   ssh user@your-server-ip
+
+2️⃣ 进入项目目录
+   cd /ql/data/scripts/cutImg
+
+3️⃣ 安装依赖
+   npm install
+   
+   # 或使用淘宝镜像（国内服务器推荐）
+   npm install --registry=https://registry.npmmirror.com
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🚀 自动化安装脚本
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【Linux 服务器】
+   1. 上传 install-deps.sh 到服务器
+   2. 运行：
+      chmod +x install-deps.sh
+      ./install-deps.sh
+
+【Windows 本地】
+   双击运行：install-deps.bat
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📦 必需的依赖列表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✓ express@^4.18.2      - Web 服务器框架
+  ✓ multer@^1.4.5-lts.1  - 文件上传处理
+  ✓ sharp@^0.33.1        - 图片处理（⚠️ 原生模块）
+  ✓ archiver@^6.0.1      - ZIP 打包
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚠️  Sharp 特殊处理（如遇编译问题）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Sharp 是原生模块，需要编译环境：
+
+【Ubuntu/Debian】
+   sudo apt-get update
+   sudo apt-get install -y build-essential python3
+   npm install
+
+【CentOS/RHEL】
+   sudo yum install -y gcc-c++ make python3
+   npm install
+
+【Alpine Linux / Docker】
+   apk add --no-cache build-base python3
+   npm install
+
+【如仍失败】
+   npm install sharp --build-from-source
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🐳 Docker 环境（推荐）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+如果是青龙面板 Docker 环境：
+
+1. 进入容器
+   docker exec -it qinglong bash
+
+2. 进入项目目录
+   cd /ql/data/scripts/cutImg
+
+3. 安装依赖
+   npm install
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔍 验证安装
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+运行以下命令验证所有依赖：
+
+node -e "
+const deps = ['express', 'multer', 'sharp', 'archiver'];
+deps.forEach(d => {
+  try {
+    require(d);
+    console.log('✅', d);
+  } catch(e) {
+    console.log('❌', d);
+  }
+});
+"
+
+预期输出：
+✅ express
+✅ multer
+✅ sharp
+✅ archiver
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🚦 启动服务
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【方式 1】直接启动
+   npm start
+
+【方式 2】使用 PM2（推荐）
+   npm install -g pm2
+   pm2 start ecosystem.config.js
+   pm2 status
+   pm2 logs cutImg
+
+【方式 3】Docker 启动
+   docker run -d -p 7788:7788 --name cutImg emoji-cutter
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 常见问题
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Q1: npm 警告 "Unknown builtin config"
+A1: 这是警告不是错误，可以忽略。或运行：
+    npm config delete globalignorefile
+    npm config delete python
+
+Q2: Sharp 安装失败 "gyp ERR! build error"
+A2: 需要安装编译工具（见上方 Sharp 特殊处理）
+
+Q3: 权限错误 "EACCES: permission denied"
+A3: 使用 sudo 或修改目录权限：
+    sudo chown -R $USER:$USER node_modules
+    npm install
+
+Q4: 网络超时（国内服务器）
+A4: 使用淘宝镜像：
+    npm install --registry=https://registry.npmmirror.com
+
+Q5: 端口被占用 "EADDRINUSE"
+A5: 
+    # 查看占用
+    netstat -ano | findstr :7788
+    # 或 Linux
+    lsof -i :7788
+    
+    # 杀死进程
+    taskkill /F /PID <进程ID>  # Windows
+    kill -9 <进程ID>           # Linux
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📂 文件清单
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+服务器环境需要以下文件：
+
+必需文件：
+  ✓ server.js              - 主程序
+  ✓ package.json           - 依赖配置
+  ✓ public/index.html      - 前端页面
+
+可选文件：
+  ○ package-lock.json      - 锁定依赖版本（推荐）
+  ○ ecosystem.config.js    - PM2 配置
+  ○ .gitignore            - Git 忽略配置
+  ○ README.md             - 项目说明
+
+自动创建：
+  ○ node_modules/         - 依赖目录（npm install 后）
+  ○ uploads/              - 上传目录
+  ○ output/               - 输出目录
+  ○ logs/                 - 日志目录
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📞 获取详细帮助
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+查看完整文档：
+  📄 依赖安装指南.md     - 详细安装说明
+  📄 PM2使用指南.md      - PM2 使用文档
+  📄 README.md           - 项目说明
+
+运行自动化脚本：
+  🔧 install-deps.sh     - Linux 自动安装
+  🔧 install-deps.bat    - Windows 自动安装
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ 总结
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Windows 本地环境：✅ 已完全配置，可正常使用
+
+2. Linux 服务器环境：只需运行 "npm install" 即可
+
+3. 如遇问题：查看 "依赖安装指南.md" 获取详细解决方案
+
+4. 快速部署：使用自动化脚本 install-deps.sh/bat
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+最后更新：2025-11-28
+项目地址：https://github.com/lylasi/cutImg
