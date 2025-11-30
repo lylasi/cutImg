@@ -1,6 +1,62 @@
 {
   "public/index.html": [
     {
+      "id": "notebook-1764522976163_c8q76ysu8",
+      "filePath": "public/index.html",
+      "note": "⚠️ GIF生成后列表可见性修复（2025-11-30）：showGifResult函数必须在显示结果的同时，恢复gifSettings和gifPreviewContainer的显示状态，确保用户可以看到图片列表并调整参数重新生成",
+      "createdAt": "2025-12-01T01:16:16.163",
+      "updatedAt": "2025-12-01T01:16:16.163"
+    },
+    {
+      "id": "notebook-1764502464409_xztzw5iux",
+      "filePath": "public/index.html",
+      "note": "⚠️ 重新制作逻辑（2025-11-30）：resetGifGenerator函数不能清空gifFrames数组！应该保留用户已添加的图片，只隐藏结果区域并显示设置区域，允许用户调整参数（帧延迟、尺寸等）后重新生成GIF",
+      "createdAt": "2025-11-30T19:34:24.409",
+      "updatedAt": "2025-11-30T23:12:59.857"
+    },
+    {
+      "id": "notebook-1764501794197_e39s0tma4",
+      "filePath": "public/index.html",
+      "note": "⚠️ 前端错误诊断增强（2025-11-30）：1) generateGif函数添加详细的console.log输出（参数、响应状态、返回数据），2) 增强错误提示弹窗（包含诊断信息和可能原因），3) 错误处理区分服务器错误和网络错误，4) 提示用户查看F12控制台获取详细信息",
+      "createdAt": "2025-11-30T19:23:14.197",
+      "updatedAt": "2025-11-30T19:23:14.197"
+    },
+    {
+      "id": "notebook-1764449455586_8yag4qhpg",
+      "filePath": "public/index.html",
+      "note": "⚠️ 重要修复（2025-11-29）：1) 剪切设置区域（cropSettings）已从uploadSection中独立出来，确保上传图片后设置选项仍然可见和可调整，2) 添加全面的移动端响应式样式（@media 768px），包括页签、设置区域、GIF列表等，3) 行列数输入框font-size设为16px防止iOS自动缩放",
+      "createdAt": "2025-11-30T04:50:55.586",
+      "updatedAt": "2025-11-30T04:50:55.586"
+    },
+    {
+      "id": "notebook-1764446132757_587lxswow",
+      "filePath": "public/index.html",
+      "note": "⚠️ 頁籤結構重構：1) 表情剪切和GIF生成分成2個頁籤（cropPane和gifPane），2) 共用GIF列表區域（sharedGifArea）位於頁籤外可展開/收起，3) switchTab函數切換頁籤，toggleGifArea控制GIF區域展開，4) updateSharedGifArea自動更新GIF列表數量badge，5) 頁籤切換時狀態完全保留（不清空任何數據）",
+      "createdAt": "2025-11-30T03:55:32.757",
+      "updatedAt": "2025-11-30T03:55:32.757"
+    },
+    {
+      "id": "notebook-1764424867105_vvy6aguzb",
+      "filePath": "public/index.html",
+      "note": "✨ GIF尺寸模式选择器：1) 新增\"尺寸模式\"下拉选项(固定/自动)，默认\"自动适应\"，2) auto模式显示\"最大尺寸\"滑块(200-1200px)，3) fixed模式显示\"固定尺寸\"滑块(100-800px正方形)，4) 推荐使用auto模式避免裁剪表情，5) updateGifSizeModeDisplay函数控制UI切换",
+      "createdAt": "2025-11-29T22:01:07.105",
+      "updatedAt": "2025-11-29T22:01:07.105"
+    },
+    {
+      "id": "notebook-1764319140751_j56h6tk8o",
+      "filePath": "public/index.html",
+      "note": "⚠️ GIF多种添加方式：1) 点击\"➕添加到GIF\"按钮从裁剪结果直接添加，2) 点击GIF卡片后Ctrl+V粘贴剪贴板图片（支持多张），3) 传统的文件选择上传。addImageToGif函数用fetch获取URL转File对象，handleGifPaste处理剪贴板多图粘贴。",
+      "createdAt": "2025-11-28T16:39:00.751",
+      "updatedAt": "2025-11-28T16:39:00.751"
+    },
+    {
+      "id": "notebook-1764316618243_clbgo87hc",
+      "filePath": "public/index.html",
+      "note": "⚠️ GIF生成UI要点：1) 支持多图上传和拖拽排序（使用Sortable.js），2) 参数验证：帧延迟50-500ms，尺寸64-1024px，3) 需至少2张图片才能生成，4) 提交到/api/create-gif端点，5) 使用FormData发送multipart/form-data",
+      "createdAt": "2025-11-28T15:56:58.243",
+      "updatedAt": "2025-11-28T15:56:58.243"
+    },
+    {
       "id": "notebook-1764312554056_ys37ffp46",
       "filePath": "public/index.html",
       "note": "✨ 新增图片点击预览功能：点击裁剪结果图片可全屏预览，支持ESC键/点击背景关闭，带动画效果",
@@ -23,6 +79,27 @@
     }
   ],
   "server.js": [
+    {
+      "id": "notebook-1764501794196_oq8za05zu",
+      "filePath": "server.js",
+      "note": "⚠️ GIF生成诊断增强（2025-11-30）：1) 添加详细的控制台日志输出（请求参数、处理进度、文件信息），2) 增强错误处理（错误类型、堆栈、自动清理临时文件），3) 输出处理统计（耗时、文件大小、尺寸信息），4) 所有日志使用emoji标记便于快速识别",
+      "createdAt": "2025-11-30T19:23:14.196",
+      "updatedAt": "2025-11-30T19:23:14.196"
+    },
+    {
+      "id": "notebook-1764424867104_qp3lrl3xs",
+      "filePath": "server.js",
+      "note": "⚠️ GIF尺寸智能适应：1) 新增sizeMode参数(fixed/auto)，2) auto模式根据第一张图片宽高比自动计算GIF尺寸，3) 使用fit:\"contain\"确保所有帧尺寸一致且不裁剪(背景透明)，4) maxSize控制最大尺寸，默认800px，5) 控制台会输出计算后的尺寸信息。⚠️关键：必须用contain而非inside，确保GIF编码器所有帧尺寸完全相同！",
+      "createdAt": "2025-11-29T22:01:07.104",
+      "updatedAt": "2025-11-30T02:49:47.393"
+    },
+    {
+      "id": "notebook-1764316618242_irnq5wx0x",
+      "filePath": "server.js",
+      "note": "⚠️ GIF生成功能要点：1) createGIF函数接收至少2张图片，2) 使用Sharp将所有图片缩放到统一尺寸(默认256x256)，3) gifencoder逐帧编码，4) 生成的GIF文件保存到gifs/目录，5) 清理机制与表情剪切一致（1小时）",
+      "createdAt": "2025-11-28T15:56:58.242",
+      "updatedAt": "2025-11-28T15:56:58.242"
+    },
     {
       "id": "notebook-1764312522176_xtkmf16hf",
       "filePath": "server.js",

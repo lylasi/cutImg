@@ -4,6 +4,7 @@ const sharp = require("sharp");
 const archiver = require("archiver");
 const fs = require("fs");
 const path = require("path");
+const GifEncoder = require("gif-encoder-2");
 
 const app = express();
 const PORT = 7788;
@@ -313,6 +314,252 @@ app.get("/preview/:sessionId", (req, res) => {
       files: imageFiles,
     });
   });
+});
+
+/**
+ * 创建GIF动图
+ * 接收多张图片，生成GIF动画
+ */
+app.post("/create-gif", upload.array("images", 20), async (req, res) => {
+  const startTime = Date.now();
+  console.log("\n" + "=".repeat(60));
+  console.log("🎬 收到GIF生成请求");
+  console.log("=".repeat(60));
+
+  try {
+    if (!req.files || req.files.length === 0) {
+      console.error("❌ 错误: 未上传任何图片");
+      return res.status(400).json({ error: "请至少上传一张图片" });
+    }
+
+    console.log(`📸 接收到 ${req.files.length} 张图片`);
+    req.files.forEach((file, index) => {
+      console.log(
+        `  ${index + 1}. ${file.originalname} (${(file.size / 1024).toFixed(
+          2
+        )} KB)`
+      );
+    });
+
+    const {
+      delay = 500,
+      loop = 0,
+      width = 300,
+      height = 300,
+      crop = "none",
+      cropRatio = 100,
+      sizeMode = "fixed", // fixed: 固定尺寸, auto: 自动适应
+      maxSize = 800, // 自动模式下的最大尺寸
+    } = req.body;
+
+    console.log("⚙️ GIF参数配置:");
+    console.log(`  - 尺寸模式: ${sizeMode}`);
+    console.log(`  - 固定尺寸: ${width}x${height}`);
+    console.log(`  - 最大尺寸: ${maxSize}`);
+    console.log(`  - 帧延迟: ${delay} ms`);
+    console.log(`  - 循环次数: ${loop === 0 ? "无限循环" : loop + "次"}`);
+    console.log(`  - 裁剪模式: ${crop}`);
+    console.log(`  - 裁剪比例: ${cropRatio}%`);
+
+    const sessionId = "gif_" + Date.now();
+    const gifFileName = `${sessionId}.gif`;
+    const gifPath = path.join(OUTPUT_DIR, gifFileName);
+
+    // 处理图片并生成GIF
+    const frames = [];
+
+    // 如果是自动模式，根据第一张图片计算最佳尺寸
+    let finalWidth = parseInt(width);
+    let finalHeight = parseInt(height);
+
+    if (sizeMode === "auto" && req.files.length > 0) {
+      const firstImageMetadata = await sharp(req.files[0].path).metadata();
+      const imgWidth = firstImageMetadata.width;
+      const imgHeight = firstImageMetadata.height;
+      const aspectRatio = imgWidth / imgHeight;
+
+      const maxSizeInt = parseInt(maxSize);
+
+      // 按最大边缩放，保持宽高比
+      if (imgWidth > imgHeight) {
+        // 横向图片
+        finalWidth = Math.min(imgWidth, maxSizeInt);
+        finalHeight = Math.round(finalWidth / aspectRatio);
+      } else {
+        // 纵向或正方形图片
+        finalHeight = Math.min(imgHeight, maxSizeInt);
+        finalWidth = Math.round(finalHeight * aspectRatio);
+      }
+      console.log(
+        `🎨 自动适应模式: 原图 ${imgWidth}x${imgHeight} → GIF ${finalWidth}x${finalHeight}`
+      );
+    } else {
+      console.log(`🎨 固定尺寸模式: GIF ${finalWidth}x${finalHeight}`);
+    }
+
+    console.log("\n🔄 开始处理图片帧...");
+
+    // 读取并调整所有图片到相同尺寸
+    for (const file of req.files) {
+      let sharpInstance = sharp(file.path);
+
+      // 如果需要裁剪，先进行中心裁剪
+      if (crop !== "none") {
+        const metadata = await sharpInstance.metadata();
+        const { width: imgWidth, height: imgHeight } = metadata;
+
+        let cropWidth, cropHeight;
+
+        // 根据裁剪模式计算裁剪尺寸
+        switch (crop) {
+          case "square": // 1:1 正方形
+            cropWidth = cropHeight = Math.min(imgWidth, imgHeight);
+            break;
+          case "4:3": // 4:3 横向
+            if (imgWidth / imgHeight > 4 / 3) {
+              cropHeight = imgHeight;
+              cropWidth = Math.floor((cropHeight * 4) / 3);
+            } else {
+              cropWidth = imgWidth;
+              cropHeight = Math.floor((cropWidth * 3) / 4);
+            }
+            break;
+          case "16:9": // 16:9 宽屏
+            if (imgWidth / imgHeight > 16 / 9) {
+              cropHeight = imgHeight;
+              cropWidth = Math.floor((cropHeight * 16) / 9);
+            } else {
+              cropWidth = imgWidth;
+              cropHeight = Math.floor((cropWidth * 9) / 16);
+            }
+            break;
+          case "percent": // 按百分比裁剪
+            const ratio = parseInt(cropRatio) / 100;
+            cropWidth = Math.floor(imgWidth * ratio);
+            cropHeight = Math.floor(imgHeight * ratio);
+            break;
+          default:
+            cropWidth = imgWidth;
+            cropHeight = imgHeight;
+        }
+
+        // 计算居中裁剪的起始位置
+        const left = Math.floor((imgWidth - cropWidth) / 2);
+        const top = Math.floor((imgHeight - cropHeight) / 2);
+
+        // 执行裁剪
+        sharpInstance = sharpInstance.extract({
+          left: Math.max(0, left),
+          top: Math.max(0, top),
+          width: cropWidth,
+          height: cropHeight,
+        });
+      }
+
+      // 调整到目标尺寸
+      // 使用 fit: "contain" 保持完整内容，不裁剪，填充到指定尺寸（背景透明）
+      const imageBuffer = await sharpInstance
+        .resize(finalWidth, finalHeight, {
+          fit: "contain", // 保持宽高比，填充到目标尺寸，不裁剪
+          background: { r: 255, g: 255, b: 255, alpha: 0 }, // 透明背景
+        })
+        .raw()
+        .ensureAlpha()
+        .toBuffer({ resolveWithObject: true });
+
+      frames.push(imageBuffer);
+
+      // 删除临时文件
+      fs.unlinkSync(file.path);
+    }
+
+    // 创建GIF编码器
+    const encoder = new GifEncoder(finalWidth, finalHeight);
+    const stream = fs.createWriteStream(gifPath);
+
+    encoder.createReadStream().pipe(stream);
+    encoder.start();
+    encoder.setRepeat(parseInt(loop)); // 0 = 无限循环
+    encoder.setDelay(parseInt(delay)); // 帧延迟（毫秒）
+    encoder.setQuality(10); // 质量 1-20 (1最高质量)
+
+    // 添加所有帧
+    for (const frame of frames) {
+      encoder.addFrame(frame.data);
+    }
+
+    encoder.finish();
+
+    // 等待文件写入完成
+    await new Promise((resolve, reject) => {
+      stream.on("finish", resolve);
+      stream.on("error", reject);
+    });
+
+    const processingTime = Date.now() - startTime;
+    const gifStats = fs.statSync(gifPath);
+
+    console.log("\n✅ GIF生成成功!");
+    console.log(`  - 文件名: ${gifFileName}`);
+    console.log(`  - 尺寸: ${finalWidth}x${finalHeight}`);
+    console.log(`  - 帧数: ${req.files.length}`);
+    console.log(`  - 文件大小: ${(gifStats.size / 1024).toFixed(2)} KB`);
+    console.log(`  - 处理耗时: ${processingTime} ms`);
+    console.log("=".repeat(60) + "\n");
+
+    res.json({
+      success: true,
+      message: `成功生成GIF动图，共${req.files.length}帧`,
+      data: {
+        fileName: gifFileName,
+        frameCount: req.files.length,
+        delay: parseInt(delay),
+        loop: parseInt(loop),
+        width: finalWidth,
+        height: finalHeight,
+        sizeMode: sizeMode,
+      },
+    });
+  } catch (error) {
+    console.error("\n💥 GIF生成失败!");
+    console.error("错误类型:", error.name);
+    console.error("错误信息:", error.message);
+    console.error("错误堆栈:\n", error.stack);
+    console.log("=".repeat(60) + "\n");
+
+    // 清理临时文件
+    if (req.files) {
+      req.files.forEach((file) => {
+        try {
+          if (fs.existsSync(file.path)) {
+            fs.unlinkSync(file.path);
+          }
+        } catch (cleanupError) {
+          console.error("清理临时文件失败:", cleanupError.message);
+        }
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      error: "生成GIF失败: " + error.message,
+      details: process.env.NODE_ENV === "development" ? error.stack : undefined,
+    });
+  }
+});
+
+/**
+ * 下载GIF文件
+ */
+app.get("/download-gif/:fileName", (req, res) => {
+  const { fileName } = req.params;
+  const filePath = path.join(OUTPUT_DIR, fileName);
+
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).json({ error: "文件不存在" });
+  }
+
+  res.download(filePath, fileName);
 });
 
 // 启动服务器

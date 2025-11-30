@@ -51,6 +51,114 @@
         display: inline-block;
       }
 
+      /* 頁籤樣式 */
+      .tabs-container {
+        background: white;
+        border-radius: 20px 20px 0 0;
+        padding: 0;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+      }
+
+      .tabs-nav {
+        display: flex;
+        background: #f8f9ff;
+        border-bottom: 3px solid #e0e0e0;
+      }
+
+      .tab-button {
+        flex: 1;
+        padding: 20px;
+        background: transparent;
+        border: none;
+        font-size: 1.1em;
+        font-weight: 600;
+        color: #666;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .tab-button:hover {
+        background: rgba(102, 126, 234, 0.1);
+        color: #667eea;
+      }
+
+      .tab-button.active {
+        background: white;
+        color: #667eea;
+      }
+
+      .tab-button.active::after {
+        content: "";
+        position: absolute;
+        bottom: -3px;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+
+      .tab-content {
+        padding: 40px;
+        background: white;
+        border-radius: 0 0 20px 20px;
+      }
+
+      .tab-pane {
+        display: none;
+      }
+
+      .tab-pane.active {
+        display: block;
+      }
+
+      /* 共用GIF列表區域樣式 */
+      .shared-gif-area {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        margin-bottom: 30px;
+      }
+
+      .shared-gif-area h3 {
+        color: #667eea;
+        font-size: 1.3em;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .shared-gif-area .collapse-toggle {
+        margin-left: auto;
+        padding: 5px 15px;
+        background: #f8f9ff;
+        border: 2px solid #667eea;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 0.85em;
+        color: #667eea;
+        font-weight: 600;
+        transition: all 0.3s;
+      }
+
+      .shared-gif-area .collapse-toggle:hover {
+        background: #667eea;
+        color: white;
+      }
+
+      .shared-gif-content {
+        transition: max-height 0.3s ease, opacity 0.3s ease;
+        overflow: hidden;
+      }
+
+      .shared-gif-content.collapsed {
+        max-height: 0 !important;
+        opacity: 0;
+      }
+
       .card {
         background: white;
         border-radius: 20px;
@@ -460,6 +568,19 @@
         width: 100%;
       }
 
+      .preview-item .btn-add-gif {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        margin-top: 8px;
+        transition: all 0.3s ease;
+      }
+
+      .preview-item .btn-add-gif:hover {
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      }
+
       .action-buttons {
         display: flex;
         gap: 15px;
@@ -599,9 +720,284 @@
         box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
       }
 
+      /* GIF生成器样式 */
+      .gif-upload-zone {
+        border: 3px dashed #667eea;
+        border-radius: 15px;
+        padding: 40px 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        background: #f8f9ff;
+        margin-bottom: 20px;
+        position: relative;
+      }
+
+      .gif-upload-zone:hover {
+        border-color: #764ba2;
+        background: #f0f2ff;
+      }
+
+      .gif-upload-zone input[type="file"] {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        opacity: 0;
+        cursor: pointer;
+      }
+
+      .gif-preview-container {
+        margin-top: 20px;
+        padding: 20px;
+        background: #f8f9ff;
+        border-radius: 12px;
+      }
+
+      .gif-frames-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 15px;
+        margin-bottom: 15px;
+      }
+
+      .gif-frame-item {
+        position: relative;
+        background: white;
+        border-radius: 10px;
+        padding: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s;
+        cursor: move;
+      }
+
+      .gif-frame-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      }
+
+      .gif-frame-item img {
+        width: 100%;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 6px;
+      }
+
+      .gif-frame-number {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        background: rgba(102, 126, 234, 0.9);
+        color: white;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8em;
+        font-weight: bold;
+      }
+
+      .gif-frame-remove {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: rgba(255, 0, 0, 0.8);
+        color: white;
+        border: none;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 16px;
+        line-height: 1;
+        transition: all 0.3s;
+      }
+
+      .gif-frame-remove:hover {
+        background: rgba(255, 0, 0, 1);
+        transform: rotate(90deg);
+      }
+
+      .gif-settings {
+        margin-top: 20px;
+        padding: 20px;
+        background: #f8f9ff;
+        border-radius: 12px;
+      }
+
+      .gif-param-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 15px;
+      }
+
+      .gif-param-item {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .gif-param-item label {
+        font-size: 0.95em;
+        color: #333;
+        font-weight: 500;
+      }
+
+      .gif-param-item label span {
+        color: #667eea;
+        font-weight: 700;
+      }
+
+      .gif-param-item input[type="range"] {
+        width: 100%;
+        height: 6px;
+        border-radius: 3px;
+        background: #e0e0e0;
+        outline: none;
+        -webkit-appearance: none;
+      }
+
+      .gif-param-item input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        cursor: pointer;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      }
+
+      .gif-param-item input[type="range"]::-moz-range-thumb {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        cursor: pointer;
+        border: none;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      }
+
+      .gif-param-item select {
+        padding: 10px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 0.95em;
+        background: white;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .gif-param-item select:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      .gif-result {
+        margin-top: 20px;
+        padding: 30px;
+        background: #f8fff8;
+        border-radius: 12px;
+        text-align: center;
+      }
+
+      .gif-result-preview {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+
       @media (max-width: 768px) {
+        body {
+          padding: 10px;
+        }
+
         .header h1 {
           font-size: 1.8em;
+        }
+
+        .header p {
+          font-size: 0.95em;
+        }
+
+        .header .tip {
+          font-size: 0.85em;
+          padding: 6px 12px;
+        }
+
+        /* 页签优化 */
+        .tabs-nav {
+          flex-direction: row;
+        }
+
+        .tab-button {
+          padding: 15px 10px;
+          font-size: 0.95em;
+        }
+
+        .tab-content {
+          padding: 15px;
+        }
+
+        /* 共用GIF区域移动端优化 */
+        .shared-gif-area {
+          margin-bottom: 15px;
+          border-radius: 15px;
+        }
+
+        .shared-gif-area h3 {
+          font-size: 1.1em;
+          flex-wrap: wrap;
+          gap: 8px;
+        }
+
+        .collapse-toggle {
+          padding: 6px 12px;
+          font-size: 0.85em;
+        }
+
+        /* 剪切设置移动端优化 */
+        .settings {
+          padding: 15px;
+        }
+
+        .settings h4 {
+          font-size: 1em;
+          margin-bottom: 12px;
+        }
+
+        .setting-row {
+          flex-direction: column;
+          gap: 10px;
+          align-items: flex-start;
+        }
+
+        .setting-row label,
+        .setting-row input,
+        .setting-row span {
+          width: 100%;
+        }
+
+        .setting-row input[type="number"] {
+          max-width: 100%;
+          padding: 10px;
+          font-size: 16px; /* 防止iOS自动缩放 */
+        }
+
+        /* 预设按钮移动端优化 */
+        .preset-buttons {
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .preset-btn {
+          width: 100%;
+          padding: 12px;
+          font-size: 0.95em;
         }
 
         .card {
@@ -609,17 +1005,65 @@
         }
 
         .preview-grid {
-          grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-          gap: 10px;
+          grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+          gap: 8px;
         }
 
         .action-buttons,
         .preview-actions {
           flex-direction: column;
+          gap: 10px;
+        }
+
+        .action-buttons button,
+        .preview-actions button {
+          width: 100%;
+          padding: 12px;
         }
 
         .preview-container {
           padding: 15px;
+        }
+
+        /* GIF帧列表移动端优化 */
+        .gif-frames-list {
+          grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+          gap: 8px;
+        }
+
+        .gif-frame-item {
+          height: 80px;
+        }
+
+        /* 上传区域移动端优化 */
+        .upload-area {
+          padding: 30px 15px;
+        }
+
+        .upload-area h3 {
+          font-size: 1.1em;
+        }
+
+        .upload-area p {
+          font-size: 0.9em;
+        }
+
+        /* GIF生成设置移动端优化 */
+        .gif-settings-grid {
+          grid-template-columns: 1fr;
+          gap: 15px;
+        }
+
+        /* 滑块控制器移动端优化 */
+        .slider-row {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .slider-row label,
+        .slider-row input,
+        .slider-row span {
+          width: 100%;
         }
       }
     </style>
@@ -627,158 +1071,436 @@
   <body>
     <div class="container">
       <div class="header">
-        <h1>🎨 表情包剪切工具</h1>
-        <p>轻松将表情版图分割成单张表情包</p>
+        <h1>🎨 表情包工具箱</h1>
+        <p>表情剪切 & GIF動圖生成，一站式解決方案</p>
         <div class="tip">💡 支持 Ctrl+V 直接粘贴图片</div>
       </div>
 
-      <div class="card">
-        <div id="alertBox" class="alert"></div>
-
-        <!-- 上传区域 -->
-        <div id="uploadSection">
-          <div class="upload-area" id="uploadArea">
-            <div class="upload-icon">📤</div>
-            <h3>点击或拖拽上传表情版图</h3>
-            <p>支持 JPG、PNG、GIF、WebP 格式，最大 10MB</p>
-            <p class="paste-tip">⌨️ 或按 Ctrl+V 直接粘贴图片</p>
-            <input type="file" id="fileInput" accept="image/*" />
-          </div>
-
-          <div class="settings">
-            <h4>⚙️ 剪切设置</h4>
-            <div class="setting-row">
-              <label>列数：</label>
-              <input type="number" id="colsInput" value="6" min="1" max="20" />
-              <label>行数：</label>
-              <input type="number" id="rowsInput" value="4" min="1" max="20" />
-              <span style="color: #666; margin-left: 10px" id="countDisplay">
-                (当前: 6列×4行 = 24张)
-              </span>
-            </div>
-            <div class="preset-buttons">
-              <span style="color: #888; font-size: 0.9em; margin-right: 8px"
-                >📋 常用规格：</span
-              >
-              <button class="preset-btn" onclick="setPreset(6, 4)">
-                6×4 标准版 (24张)
-              </button>
-              <button class="preset-btn" onclick="setPreset(7, 5)">
-                7×5 加强版 (35张)
-              </button>
-              <button class="preset-btn" onclick="setPreset(8, 4)">
-                8×4 宽屏版 (32张)
-              </button>
-              <button class="preset-btn" onclick="setPreset(5, 5)">
-                5×5 方形版 (25张)
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- 剪切预览区域 -->
-        <div id="previewSection" class="preview-section">
-          <div class="preview-container">
-            <div class="preview-header">
-              <h3>🔍 剪切预览</h3>
-              <p>红色网格线显示将被剪切的位置，蓝色虚线为裁剪边界</p>
-            </div>
-
-            <!-- 边距调整控制 -->
-            <div class="margin-controls">
-              <h4>✂️ 边距裁剪 (调整滑块去除留白)</h4>
-              <div class="margin-grid">
-                <div class="margin-item">
-                  <label>⬆️ 上边距: <span id="topValue">0</span>px</label>
-                  <input
-                    type="range"
-                    id="marginTop"
-                    min="0"
-                    max="200"
-                    value="0"
-                    step="1"
-                  />
-                </div>
-                <div class="margin-item">
-                  <label>⬇️ 下边距: <span id="bottomValue">0</span>px</label>
-                  <input
-                    type="range"
-                    id="marginBottom"
-                    min="0"
-                    max="200"
-                    value="0"
-                    step="1"
-                  />
-                </div>
-                <div class="margin-item">
-                  <label>⬅️ 左边距: <span id="leftValue">0</span>px</label>
-                  <input
-                    type="range"
-                    id="marginLeft"
-                    min="0"
-                    max="200"
-                    value="0"
-                    step="1"
-                  />
-                </div>
-                <div class="margin-item">
-                  <label>➡️ 右边距: <span id="rightValue">0</span>px</label>
-                  <input
-                    type="range"
-                    id="marginRight"
-                    min="0"
-                    max="200"
-                    value="0"
-                    step="1"
-                  />
-                </div>
-              </div>
-              <button class="btn-reset" onclick="resetMargins()">
-                🔄 重置边距
-              </button>
-            </div>
-
-            <div class="canvas-container">
-              <canvas id="previewCanvas"></canvas>
-            </div>
-            <div class="preview-actions">
-              <button class="btn btn-success" onclick="confirmCut()">
-                ✂️ 确认剪切
-              </button>
-              <button class="btn btn-secondary" onclick="cancelPreview()">
-                ❌ 取消
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- 加载中 -->
-        <div id="loadingSection" class="loading">
-          <div class="spinner"></div>
-          <p>正在处理图片，请稍候...</p>
-        </div>
-
-        <!-- 结果展示 -->
-        <div id="resultSection" class="result">
-          <div class="result-header">
-            <div>
-              <h3>✅ 剪切完成</h3>
-              <p class="result-info">
-                共生成 <strong id="emojiCount">0</strong> 张表情
-              </p>
-            </div>
-            <button class="btn" onclick="resetUpload()">🔄 重新上传</button>
-          </div>
-
-          <div class="preview-grid" id="previewGrid"></div>
-
-          <div class="action-buttons">
-            <button class="btn btn-success" onclick="downloadAll()">
-              📦 打包下载全部 (ZIP)
+      <!-- 共用GIF列表區域 -->
+      <div class="shared-gif-area" id="sharedGifArea" style="display: none">
+        <h3>
+          🎬 GIF圖片列表
+          <span
+            class="badge"
+            id="gifBadgeCount"
+            style="
+              background: #667eea;
+              color: white;
+              padding: 4px 12px;
+              border-radius: 15px;
+              font-size: 0.85em;
+            "
+            >0 張</span
+          >
+          <button class="collapse-toggle" onclick="toggleGifArea()">
+            <span id="collapseIcon">▼</span> 收起
+          </button>
+        </h3>
+        <div class="shared-gif-content" id="sharedGifContent">
+          <div
+            id="gifPreviewContainer"
+            class="gif-preview-container"
+            style="display: block; background: transparent; padding: 0"
+          >
+            <div id="gifFramesList" class="gif-frames-list"></div>
+            <button
+              class="btn-secondary"
+              style="margin-top: 15px"
+              onclick="clearGifFrames()"
+            >
+              🗑️ 清空所有图片
             </button>
           </div>
         </div>
       </div>
+
+      <!-- 頁籤容器 -->
+      <div class="tabs-container">
+        <!-- 頁籤導航 -->
+        <div class="tabs-nav">
+          <button
+            class="tab-button active"
+            onclick="switchTab('crop')"
+            id="tabCrop"
+          >
+            ✂️ 表情剪切
+          </button>
+          <button class="tab-button" onclick="switchTab('gif')" id="tabGif">
+            🎬 GIF生成
+          </button>
+        </div>
+
+        <!-- 頁籤內容 -->
+        <div class="tab-content">
+          <!-- Tab 1: 表情剪切 -->
+          <div class="tab-pane active" id="cropPane">
+            <div id="alertBox" class="alert"></div>
+
+            <!-- 上传区域 -->
+            <div id="uploadSection">
+              <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📤</div>
+                <h3>点击或拖拽上传表情版图</h3>
+                <p>支持 JPG、PNG、GIF、WebP 格式，最大 10MB</p>
+                <p class="paste-tip">⌨️ 或按 Ctrl+V 直接粘贴图片</p>
+                <input type="file" id="fileInput" accept="image/*" />
+              </div>
+            </div>
+
+            <!-- 剪切设置区域（独立显示，不受上传区域影响） -->
+            <div class="settings" id="cropSettings">
+              <h4>⚙️ 剪切设置</h4>
+              <div class="setting-row">
+                <label>列数：</label>
+                <input
+                  type="number"
+                  id="colsInput"
+                  value="6"
+                  min="1"
+                  max="20"
+                />
+                <label>行数：</label>
+                <input
+                  type="number"
+                  id="rowsInput"
+                  value="4"
+                  min="1"
+                  max="20"
+                />
+                <span style="color: #666; margin-left: 10px" id="countDisplay">
+                  (当前: 6列×4行 = 24张)
+                </span>
+              </div>
+              <div class="preset-buttons">
+                <span style="color: #888; font-size: 0.9em; margin-right: 8px"
+                  >📋 常用规格：</span
+                >
+                <button class="preset-btn" onclick="setPreset(6, 4)">
+                  6×4 标准版 (24张)
+                </button>
+                <button class="preset-btn" onclick="setPreset(7, 5)">
+                  7×5 加强版 (35张)
+                </button>
+                <button class="preset-btn" onclick="setPreset(8, 4)">
+                  8×4 宽屏版 (32张)
+                </button>
+                <button class="preset-btn" onclick="setPreset(5, 5)">
+                  5×5 方形版 (25张)
+                </button>
+              </div>
+            </div>
+
+            <!-- 剪切预览区域 -->
+            <div id="previewSection" class="preview-section">
+              <div class="preview-container">
+                <div class="preview-header">
+                  <h3>🔍 剪切预览</h3>
+                  <p>红色网格线显示将被剪切的位置，蓝色虚线为裁剪边界</p>
+                </div>
+
+                <!-- 边距调整控制 -->
+                <div class="margin-controls">
+                  <h4>✂️ 边距裁剪 (调整滑块去除留白)</h4>
+                  <div class="margin-grid">
+                    <div class="margin-item">
+                      <label>⬆️ 上边距: <span id="topValue">0</span>px</label>
+                      <input
+                        type="range"
+                        id="marginTop"
+                        min="0"
+                        max="200"
+                        value="0"
+                        step="1"
+                      />
+                    </div>
+                    <div class="margin-item">
+                      <label
+                        >⬇️ 下边距: <span id="bottomValue">0</span>px</label
+                      >
+                      <input
+                        type="range"
+                        id="marginBottom"
+                        min="0"
+                        max="200"
+                        value="0"
+                        step="1"
+                      />
+                    </div>
+                    <div class="margin-item">
+                      <label>⬅️ 左边距: <span id="leftValue">0</span>px</label>
+                      <input
+                        type="range"
+                        id="marginLeft"
+                        min="0"
+                        max="200"
+                        value="0"
+                        step="1"
+                      />
+                    </div>
+                    <div class="margin-item">
+                      <label>➡️ 右边距: <span id="rightValue">0</span>px</label>
+                      <input
+                        type="range"
+                        id="marginRight"
+                        min="0"
+                        max="200"
+                        value="0"
+                        step="1"
+                      />
+                    </div>
+                  </div>
+                  <button class="btn-reset" onclick="resetMargins()">
+                    🔄 重置边距
+                  </button>
+                </div>
+
+                <div class="canvas-container">
+                  <canvas id="previewCanvas"></canvas>
+                </div>
+                <div class="preview-actions">
+                  <button class="btn btn-success" onclick="confirmCut()">
+                    ✂️ 确认剪切
+                  </button>
+                  <button class="btn btn-secondary" onclick="cancelPreview()">
+                    ❌ 取消
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 加载中 -->
+            <div id="loadingSection" class="loading">
+              <div class="spinner"></div>
+              <p>正在处理图片，请稍候...</p>
+            </div>
+
+            <!-- 结果展示 -->
+            <div id="resultSection" class="result">
+              <div class="result-header">
+                <div>
+                  <h3>✅ 剪切完成</h3>
+                  <p class="result-info">
+                    共生成 <strong id="emojiCount">0</strong> 张表情
+                  </p>
+                </div>
+                <button class="btn" onclick="resetUpload()">🔄 重新上传</button>
+              </div>
+
+              <div class="preview-grid" id="previewGrid"></div>
+
+              <div class="action-buttons">
+                <button class="btn btn-success" onclick="downloadAll()">
+                  📦 打包下载全部 (ZIP)
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- Tab 1 結束 -->
+
+          <!-- Tab 2: GIF生成 -->
+          <div class="tab-pane" id="gifPane">
+            <div id="gifAlertBox" class="alert"></div>
+
+            <div id="gifUploadArea" class="gif-upload-zone">
+              <div class="upload-icon">🖼️</div>
+              <h3>选择多张图片</h3>
+              <p>支持 JPG、PNG、GIF、WebP 格式</p>
+              <p class="paste-tip">📌 可一次选择多张图片（最多20张）</p>
+              <p class="paste-tip" style="color: #667eea; font-weight: 500">
+                ⌨️ 或点击此卡片后按 Ctrl+V 粘贴剪贴板图片
+              </p>
+              <p class="paste-tip" style="color: #48bb78; font-weight: 500">
+                ➕ 或点击表情剪切结果的"添加到GIF"按钮
+              </p>
+              <input type="file" id="gifFileInput" accept="image/*" multiple />
+            </div>
+
+            <!-- GIF参数设置 -->
+            <div id="gifSettings" class="gif-settings" style="display: none">
+              <h4 style="color: #667eea; margin-bottom: 15px">
+                ⚙️ GIF参数设置
+              </h4>
+
+              <div class="gif-param-grid">
+                <div class="gif-param-item">
+                  <label
+                    >📏 尺寸模式：<span id="gifSizeModeValue"
+                      >固定尺寸</span
+                    ></label
+                  >
+                  <select
+                    id="gifSizeMode"
+                    onchange="updateGifSizeModeDisplay(this.value)"
+                  >
+                    <option value="fixed">📐 固定尺寸（正方形）</option>
+                    <option value="auto" selected>
+                      🎨 自动适应（保持宽高比）
+                    </option>
+                  </select>
+                  <small style="color: #999; display: block; margin-top: 5px">
+                    推荐使用"自动适应"避免裁剪
+                  </small>
+                </div>
+
+                <div
+                  class="gif-param-item"
+                  id="fixedSizeContainer"
+                  style="display: none"
+                >
+                  <label
+                    >固定尺寸：<span id="gifSizeValue">300x300</span>px</label
+                  >
+                  <input
+                    type="range"
+                    id="gifSize"
+                    min="100"
+                    max="800"
+                    step="50"
+                    value="300"
+                    oninput="updateGifSizeDisplay(this.value)"
+                  />
+                </div>
+
+                <div class="gif-param-item" id="autoSizeContainer">
+                  <label
+                    >最大尺寸：<span id="gifMaxSizeValue">800</span>px</label
+                  >
+                  <input
+                    type="range"
+                    id="gifMaxSize"
+                    min="200"
+                    max="1200"
+                    step="100"
+                    value="800"
+                    oninput="updateGifMaxSizeDisplay(this.value)"
+                  />
+                  <small style="color: #999; display: block; margin-top: 5px">
+                    按长边缩放，保持原图比例
+                  </small>
+                </div>
+
+                <div class="gif-param-item">
+                  <label>帧延迟：<span id="gifDelayValue">500</span>ms</label>
+                  <input
+                    type="range"
+                    id="gifDelay"
+                    min="100"
+                    max="2000"
+                    step="100"
+                    value="500"
+                    oninput="updateGifDelayDisplay(this.value)"
+                  />
+                </div>
+
+                <div class="gif-param-item">
+                  <label
+                    >循环次数：<span id="gifLoopValue">无限循环</span></label
+                  >
+                  <select
+                    id="gifLoop"
+                    onchange="updateGifLoopDisplay(this.value)"
+                  >
+                    <option value="0">无限循环</option>
+                    <option value="1">播放1次</option>
+                    <option value="3">播放3次</option>
+                    <option value="5">播放5次</option>
+                    <option value="10">播放10次</option>
+                  </select>
+                </div>
+
+                <div class="gif-param-item">
+                  <label
+                    >📐 裁剪模式：<span id="gifCropValue">无裁剪</span></label
+                  >
+                  <select
+                    id="gifCrop"
+                    onchange="updateGifCropDisplay(this.value)"
+                  >
+                    <option value="none">🖼️ 无裁剪（保持完整）</option>
+                    <option value="square">⬛ 1:1 正方形居中裁剪</option>
+                    <option value="4:3">📺 4:3 横向居中裁剪</option>
+                    <option value="16:9">🎬 16:9 宽屏居中裁剪</option>
+                    <option value="percent">📏 自定义比例裁剪</option>
+                  </select>
+                </div>
+
+                <div
+                  class="gif-param-item"
+                  id="cropRatioContainer"
+                  style="display: none"
+                >
+                  <label
+                    >裁剪比例：<span id="gifCropRatioValue">80</span>%</label
+                  >
+                  <input
+                    type="range"
+                    id="gifCropRatio"
+                    min="50"
+                    max="100"
+                    step="5"
+                    value="80"
+                    oninput="updateGifCropRatioDisplay(this.value)"
+                  />
+                  <small style="color: #999; display: block; margin-top: 5px">
+                    从中心按比例裁剪（数值越小裁剪越多）
+                  </small>
+                </div>
+              </div>
+
+              <div style="text-align: center; margin-top: 25px">
+                <button
+                  class="btn btn-success"
+                  onclick="generateGif()"
+                  id="generateGifBtn"
+                >
+                  ✨ 生成GIF动图
+                </button>
+              </div>
+            </div>
+
+            <!-- GIF生成加载中 -->
+            <div id="gifLoadingSection" class="loading" style="display: none">
+              <div class="spinner"></div>
+              <p>正在生成GIF动图，请稍候...</p>
+            </div>
+
+            <!-- GIF生成结果 -->
+            <div id="gifResultSection" class="gif-result" style="display: none">
+              <h3 style="color: #4caf50; margin-bottom: 20px">
+                ✅ GIF动图生成成功！
+              </h3>
+              <div class="gif-result-preview">
+                <img
+                  id="gifResultImage"
+                  src=""
+                  alt="生成的GIF"
+                  style="
+                    max-width: 100%;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+                  "
+                />
+              </div>
+              <div
+                class="gif-result-info"
+                id="gifResultInfo"
+                style="margin-top: 15px; color: #666"
+              ></div>
+              <div class="action-buttons" style="margin-top: 20px">
+                <button class="btn btn-success" onclick="downloadGif()">
+                  ⬇️ 下载GIF
+                </button>
+                <button class="btn" onclick="resetGifGenerator()">
+                  🔄 重新制作
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- Tab 2 結束 -->
+        </div>
+        <!-- tab-content 結束 -->
+      </div>
+      <!-- tabs-container 結束 -->
 
       <div
         style="text-align: center; color: white; margin-top: 20px; opacity: 0.8"
@@ -788,6 +1510,58 @@
     </div>
 
     <script>
+      // ==================== 頁籤切換功能 ====================
+      function switchTab(tabName) {
+        // 移除所有active類
+        document.querySelectorAll(".tab-button").forEach((btn) => {
+          btn.classList.remove("active");
+        });
+        document.querySelectorAll(".tab-pane").forEach((pane) => {
+          pane.classList.remove("active");
+        });
+
+        // 添加當前active類
+        if (tabName === "crop") {
+          document.getElementById("tabCrop").classList.add("active");
+          document.getElementById("cropPane").classList.add("active");
+        } else if (tabName === "gif") {
+          document.getElementById("tabGif").classList.add("active");
+          document.getElementById("gifPane").classList.add("active");
+        }
+      }
+
+      // 切換共用GIF區域展開/收起
+      function toggleGifArea() {
+        const content = document.getElementById("sharedGifContent");
+        const icon = document.getElementById("collapseIcon");
+        const button = content.parentElement.querySelector(".collapse-toggle");
+
+        if (content.classList.contains("collapsed")) {
+          content.classList.remove("collapsed");
+          icon.textContent = "▼";
+          button.innerHTML = '<span id="collapseIcon">▼</span> 收起';
+        } else {
+          content.classList.add("collapsed");
+          icon.textContent = "▶";
+          button.innerHTML = '<span id="collapseIcon">▶</span> 展開';
+        }
+      }
+
+      // 更新GIF列表顯示和數量badge
+      function updateSharedGifArea() {
+        const sharedArea = document.getElementById("sharedGifArea");
+        const badge = document.getElementById("gifBadgeCount");
+        const frameCount = gifFrames.length;
+
+        if (frameCount > 0) {
+          sharedArea.style.display = "block";
+          badge.textContent = `${frameCount} 張`;
+        } else {
+          sharedArea.style.display = "none";
+        }
+      }
+
+      // ==================== 表情剪切功能 ====================
       let currentSessionId = null;
       let currentImageFile = null;
 
@@ -852,8 +1626,16 @@
         }
       });
 
-      // 粘贴功能 - 核心新功能！
+      // 粘贴功能 - 表情剪切区域
       document.addEventListener("paste", (e) => {
+        // 如果焦点在GIF生成区域，不处理
+        const gifCard = document
+          .querySelector("#gifUploadArea")
+          .closest(".card");
+        if (gifCard && gifCard.contains(e.target)) {
+          return; // 让GIF区域的paste事件处理
+        }
+
         const items = e.clipboardData.items;
 
         for (let i = 0; i < items.length; i++) {
@@ -863,6 +1645,20 @@
             showAlert("✅ 已从剪贴板粘贴图片", "info");
             break;
           }
+        }
+      });
+
+      // GIF生成区域的粘贴功能
+      document.addEventListener("DOMContentLoaded", () => {
+        const gifCard = document
+          .querySelector("#gifUploadArea")
+          .closest(".card");
+        if (gifCard) {
+          gifCard.addEventListener("paste", handleGifPaste);
+
+          // 为GIF卡片添加视觉提示
+          gifCard.style.position = "relative";
+          gifCard.setAttribute("tabindex", "0"); // 使其可以获得焦点
         }
       });
 
@@ -1076,6 +1872,9 @@
           <button class="btn" onclick="downloadSingle('${data.sessionId}', '${fileName}')">
             ⬇️ 下载
           </button>
+          <button class="btn btn-add-gif" onclick="addImageToGif('${imgUrl}', '${fileName}')" title="添加到GIF生成器">
+            ➕ 添加到GIF
+          </button>
         `;
 
           previewGrid.appendChild(item);
@@ -1182,6 +1981,464 @@
         rowsInput.value = rows;
         updateCount();
       }
+
+      // ==================== GIF生成功能 ====================
+      let gifFrames = []; // 存储选择的图片文件
+      let currentGifFileName = null;
+
+      const gifFileInput = document.getElementById("gifFileInput");
+      const gifPreviewContainer = document.getElementById(
+        "gifPreviewContainer"
+      );
+      const gifFramesList = document.getElementById("gifFramesList");
+      const gifSettings = document.getElementById("gifSettings");
+      const gifLoadingSection = document.getElementById("gifLoadingSection");
+      const gifResultSection = document.getElementById("gifResultSection");
+      const gifFrameCount = document.getElementById("gifFrameCount");
+
+      // 处理GIF图片选择
+      gifFileInput.addEventListener("change", (e) => {
+        const files = Array.from(e.target.files);
+        if (files.length === 0) return;
+
+        // 添加新文件到frames数组
+        gifFrames = [...gifFrames, ...files].slice(0, 20); // 最多20张
+        updateGifFramesDisplay();
+        gifFileInput.value = ""; // 清空input，允许重复选择相同文件
+      });
+
+      // 更新GIF帧预览显示
+      function updateGifFramesDisplay() {
+        if (gifFrames.length === 0) {
+          gifSettings.style.display = "none";
+          updateSharedGifArea(); // 更新共用區域
+          return;
+        }
+
+        gifSettings.style.display = "block";
+
+        gifFramesList.innerHTML = "";
+        gifFrames.forEach((file, index) => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const frameItem = document.createElement("div");
+            frameItem.className = "gif-frame-item";
+            frameItem.draggable = true;
+            frameItem.dataset.index = index;
+
+            frameItem.innerHTML = `
+              <img src="${e.target.result}" alt="Frame ${index + 1}">
+              <div class="gif-frame-number">${index + 1}</div>
+              <button class="gif-frame-remove" onclick="removeGifFrame(${index})">&times;</button>
+            `;
+
+            // 拖拽排序事件
+            frameItem.addEventListener("dragstart", handleDragStart);
+            frameItem.addEventListener("dragover", handleDragOver);
+            frameItem.addEventListener("drop", handleDrop);
+            frameItem.addEventListener("dragend", handleDragEnd);
+
+            gifFramesList.appendChild(frameItem);
+          };
+          reader.readAsDataURL(file);
+        });
+
+        updateSharedGifArea(); // 更新共用區域
+      }
+
+      // 拖拽排序相关
+      let draggedElement = null;
+
+      function handleDragStart(e) {
+        draggedElement = this;
+        this.style.opacity = "0.5";
+      }
+
+      function handleDragOver(e) {
+        e.preventDefault();
+        return false;
+      }
+
+      function handleDrop(e) {
+        e.stopPropagation();
+        e.preventDefault();
+
+        if (draggedElement !== this) {
+          const fromIndex = parseInt(draggedElement.dataset.index);
+          const toIndex = parseInt(this.dataset.index);
+
+          // 交换数组中的位置
+          const temp = gifFrames[fromIndex];
+          gifFrames[fromIndex] = gifFrames[toIndex];
+          gifFrames[toIndex] = temp;
+
+          updateGifFramesDisplay();
+        }
+
+        return false;
+      }
+
+      function handleDragEnd(e) {
+        this.style.opacity = "1";
+      }
+
+      // 删除单个GIF帧
+      function removeGifFrame(index) {
+        gifFrames.splice(index, 1);
+        updateGifFramesDisplay();
+        updateSharedGifArea(); // 同步更新徽章数字
+      }
+
+      // 清空所有GIF帧
+      function clearGifFrames() {
+        gifFrames = [];
+        updateGifFramesDisplay();
+        updateSharedGifArea(); // 同步更新徽章数字
+      }
+
+      // 从URL添加图片到GIF生成器
+      async function addImageToGif(imageUrl, fileName) {
+        try {
+          // 获取图片数据
+          const response = await fetch(imageUrl);
+          if (!response.ok) throw new Error("图片加载失败");
+
+          const blob = await response.blob();
+
+          // 转换为File对象
+          const file = new File([blob], fileName || `image_${Date.now()}.png`, {
+            type: blob.type || "image/png",
+          });
+
+          // 检查是否超过最大数量
+          if (gifFrames.length >= 20) {
+            alert("⚠️ 最多支持20张图片");
+            return;
+          }
+
+          // 添加到GIF帧数组
+          gifFrames.push(file);
+          updateGifFramesDisplay();
+
+          // 顯示成功提示
+          showAlert(
+            `✅ 已添加 "${fileName}" 到GIF列表 (共${gifFrames.length}張)`,
+            "success"
+          );
+
+          // 滾動到共用GIF區域
+          setTimeout(() => {
+            const sharedArea = document.getElementById("sharedGifArea");
+            if (sharedArea) {
+              sharedArea.scrollIntoView({
+                behavior: "smooth",
+                block: "nearest",
+              });
+            }
+          }, 100);
+        } catch (error) {
+          console.error("添加图片到GIF失败:", error);
+          alert("❌ 添加失败: " + error.message);
+        }
+      }
+
+      // 处理剪贴板粘贴的图片（支持多张）
+      async function handleGifPaste(e) {
+        e.preventDefault();
+
+        const items = e.clipboardData.items;
+        let addedCount = 0;
+
+        for (let i = 0; i < items.length; i++) {
+          if (items[i].type.indexOf("image") !== -1) {
+            const file = items[i].getAsFile();
+            if (file) {
+              // 检查是否超过最大数量
+              if (gifFrames.length + addedCount >= 20) {
+                alert("⚠️ 最多支持20张图片，部分图片未添加");
+                break;
+              }
+
+              // 重命名文件
+              const renamedFile = new File(
+                [file],
+                `pasted_${Date.now()}_${addedCount}.png`,
+                {
+                  type: file.type,
+                }
+              );
+
+              gifFrames.push(renamedFile);
+              addedCount++;
+            }
+          }
+        }
+
+        if (addedCount > 0) {
+          updateGifFramesDisplay();
+          showAlert(
+            `✅ 已从剪贴板添加 ${addedCount} 张图片 (共${gifFrames.length}张)`,
+            "success"
+          );
+        } else {
+          showAlert("❌ 剪贴板中没有图片", "error");
+        }
+      }
+
+      // 更新GIF尺寸模式显示
+      function updateGifSizeModeDisplay(value) {
+        const modeTexts = {
+          fixed: "固定尺寸",
+          auto: "自动适应",
+        };
+        document.getElementById("gifSizeModeValue").textContent =
+          modeTexts[value] || "固定尺寸";
+
+        // 显示/隐藏对应的控件
+        const fixedContainer = document.getElementById("fixedSizeContainer");
+        const autoContainer = document.getElementById("autoSizeContainer");
+
+        if (value === "fixed") {
+          fixedContainer.style.display = "block";
+          autoContainer.style.display = "none";
+        } else {
+          fixedContainer.style.display = "none";
+          autoContainer.style.display = "block";
+        }
+      }
+
+      // 更新GIF固定尺寸显示
+      function updateGifSizeDisplay(value) {
+        document.getElementById(
+          "gifSizeValue"
+        ).textContent = `${value}x${value}`;
+      }
+
+      // 更新GIF最大尺寸显示
+      function updateGifMaxSizeDisplay(value) {
+        document.getElementById("gifMaxSizeValue").textContent = value;
+      }
+
+      // 更新GIF延迟显示
+      function updateGifDelayDisplay(value) {
+        document.getElementById("gifDelayValue").textContent = value;
+      }
+
+      // 更新GIF循环显示
+      function updateGifLoopDisplay(value) {
+        const loopText = value === "0" ? "无限循环" : `播放${value}次`;
+        document.getElementById("gifLoopValue").textContent = loopText;
+      }
+
+      // 更新GIF裁剪模式显示
+      function updateGifCropDisplay(value) {
+        const cropTexts = {
+          none: "无裁剪",
+          square: "1:1 正方形",
+          "4:3": "4:3 横向",
+          "16:9": "16:9 宽屏",
+          percent: "自定义比例",
+        };
+        document.getElementById("gifCropValue").textContent =
+          cropTexts[value] || "无裁剪";
+
+        // 显示/隐藏自定义比例滑块
+        const cropRatioContainer =
+          document.getElementById("cropRatioContainer");
+        if (value === "percent") {
+          cropRatioContainer.style.display = "block";
+        } else {
+          cropRatioContainer.style.display = "none";
+        }
+      }
+
+      // 更新GIF裁剪比例显示
+      function updateGifCropRatioDisplay(value) {
+        document.getElementById("gifCropRatioValue").textContent = value;
+      }
+
+      // 生成GIF
+      async function generateGif() {
+        if (gifFrames.length === 0) {
+          alert("请至少选择一张图片");
+          return;
+        }
+
+        const formData = new FormData();
+
+        // 添加所有图片
+        gifFrames.forEach((file, index) => {
+          formData.append("images", file);
+        });
+
+        // 添加参数
+        const sizeMode = document.getElementById("gifSizeMode").value;
+        const size = document.getElementById("gifSize").value;
+        const maxSize = document.getElementById("gifMaxSize").value;
+        const delay = document.getElementById("gifDelay").value;
+        const loop = document.getElementById("gifLoop").value;
+        const crop = document.getElementById("gifCrop").value;
+        const cropRatio = document.getElementById("gifCropRatio").value;
+
+        // 根据模式添加不同的尺寸参数
+        formData.append("sizeMode", sizeMode);
+        if (sizeMode === "fixed") {
+          formData.append("width", size);
+          formData.append("height", size);
+        } else {
+          // auto模式，使用maxSize，宽高由后端根据原图计算
+          formData.append("maxSize", maxSize);
+          formData.append("width", 300); // 默认值，后端会覆盖
+          formData.append("height", 300);
+        }
+        formData.append("delay", delay);
+        formData.append("loop", loop);
+        formData.append("crop", crop);
+        formData.append("cropRatio", cropRatio);
+
+        // 显示加载状态
+        gifSettings.style.display = "none";
+        gifPreviewContainer.style.display = "none";
+        gifLoadingSection.style.display = "block";
+
+        try {
+          console.log("🚀 开始生成GIF...");
+          console.log("📊 参数信息:", {
+            图片数量: gifFrames.length,
+            尺寸模式: sizeMode,
+            固定尺寸: size,
+            最大尺寸: maxSize,
+            帧延迟: delay,
+            循环次数: loop,
+            裁剪模式: crop,
+            裁剪比例: cropRatio,
+          });
+
+          const response = await fetch("/create-gif", {
+            method: "POST",
+            body: formData,
+          });
+
+          console.log(
+            "📡 服务器响应状态:",
+            response.status,
+            response.statusText
+          );
+
+          // 检查响应状态
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error("❌ 服务器错误响应:", errorText);
+            throw new Error(`服务器错误 (${response.status}): ${errorText}`);
+          }
+
+          const data = await response.json();
+          console.log("✅ 服务器返回数据:", data);
+
+          if (data.success) {
+            currentGifFileName = data.data.fileName;
+            showGifResult(data.data);
+            console.log("🎉 GIF生成成功!");
+          } else {
+            throw new Error(data.error || "生成GIF失败");
+          }
+        } catch (error) {
+          console.error("💥 GIF生成失败:", error);
+
+          // 详细的错误提示
+          let errorMsg = "生成GIF失败\n\n";
+          errorMsg += "错误详情: " + error.message + "\n\n";
+          errorMsg += "🔍 诊断信息:\n";
+          errorMsg += `- 图片数量: ${gifFrames.length} 张\n`;
+          errorMsg += `- 尺寸模式: ${sizeMode}\n`;
+          errorMsg += `- 帧延迟: ${delay} ms\n`;
+          errorMsg += `- 循环次数: ${
+            loop === "0" ? "无限循环" : loop + "次"
+          }\n\n`;
+          errorMsg += "💡 可能的原因:\n";
+          errorMsg += "1. 服务器未启动或已断开连接\n";
+          errorMsg += "2. 图片文件损坏或格式不支持\n";
+          errorMsg += "3. 服务器处理超时\n";
+          errorMsg += "4. 内存不足\n\n";
+          errorMsg += "📝 请查看浏览器控制台(F12)获取更多详细信息";
+
+          alert(errorMsg);
+
+          gifSettings.style.display = "block";
+          gifPreviewContainer.style.display = "block";
+        } finally {
+          gifLoadingSection.style.display = "none";
+        }
+      }
+
+      // 显示GIF生成结果
+      function showGifResult(data) {
+        const resultImage = document.getElementById("gifResultImage");
+        const resultInfo = document.getElementById("gifResultInfo");
+
+        resultImage.src = `/output/${data.fileName}?t=${Date.now()}`;
+
+        resultInfo.innerHTML = `
+          <p><strong>帧数：</strong>${data.frameCount} 帧</p>
+          <p><strong>尺寸：</strong>${data.width}×${data.height} px</p>
+          <p><strong>帧延迟：</strong>${data.delay} ms</p>
+          <p><strong>循环：</strong>${
+            data.loop === 0 ? "无限循环" : data.loop + "次"
+          }</p>
+        `;
+
+        // ✅ 关键修复：显示结果的同时，保持设置和列表区域可见
+        gifResultSection.style.display = "block";
+        gifSettings.style.display = "block"; // 显示设置区域
+        gifPreviewContainer.style.display = "block"; // 显示图片列表
+
+        // 自动展开GIF列表（如果是收起状态）
+        const content = document.getElementById("sharedGifContent");
+        if (content && content.classList.contains("collapsed")) {
+          toggleGifArea(); // 展开列表
+        }
+
+        // 滚动到GIF列表区域
+        setTimeout(() => {
+          const sharedArea = document.getElementById("sharedGifArea");
+          if (sharedArea) {
+            sharedArea.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        }, 100);
+      }
+
+      // 下载GIF
+      function downloadGif() {
+        if (!currentGifFileName) return;
+        const url = `/download-gif/${currentGifFileName}`;
+        window.open(url, "_blank");
+      }
+
+      // 重新制作GIF（保留图片列表，只隐藏结果）
+      function resetGifGenerator() {
+        // ⚠️ 关键：不清空gifFrames数组，保留用户已添加的图片
+        // gifFrames = []; // ❌ 不要清空！
+
+        currentGifFileName = null;
+
+        // 只隐藏结果区域，显示设置和预览区域
+        gifResultSection.style.display = "none";
+        gifSettings.style.display = "block";
+        gifPreviewContainer.style.display = "block";
+
+        // 不需要清空或更新列表，因为图片还在
+        // 用户可以调整参数后重新生成
+
+        console.log(
+          `📝 重新制作模式：保留${gifFrames.length}张图片，允许调整参数后重新生成`
+        );
+
+        // 滚动到设置区域
+        setTimeout(() => {
+          gifSettings.scrollIntoView({ behavior: "smooth", block: "center" });
+        }, 100);
+      }
+      // ==================== GIF功能结束 ====================
 
       // 页面加载完成提示
       window.addEventListener("load", () => {
