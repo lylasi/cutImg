@@ -1,6 +1,13 @@
 {
   "public/index.html": [
     {
+      "id": "notebook-1764754254461_lqpkcyx3o",
+      "filePath": "public/index.html",
+      "note": "✨ 前端分享功能（2025-12-03）：1) generateShareLink函数调用后端API生成分享链接，2) showShareDialog显示分享对话框（包含复制和打开按钮），3) copyShareLink使用Clipboard API复制链接（含降级方案），4) 自定义对话框支持ESC和点击背景关闭，5) 分享按钮显示在剪切结果的action-buttons区域",
+      "createdAt": "2025-12-03T17:30:54.461",
+      "updatedAt": "2025-12-03T17:30:54.461"
+    },
+    {
       "id": "notebook-1764522976163_c8q76ysu8",
       "filePath": "public/index.html",
       "note": "⚠️ GIF生成后列表可见性修复（2025-11-30）：showGifResult函数必须在显示结果的同时，恢复gifSettings和gifPreviewContainer的显示状态，确保用户可以看到图片列表并调整参数重新生成",
@@ -80,6 +87,13 @@
   ],
   "server.js": [
     {
+      "id": "notebook-1764754243016_tjsvz4ht6",
+      "filePath": "server.js",
+      "note": "✨ 照片分享功能（2025-12-03）：1) POST /api/share/:sessionId 生成唯一分享链接，2) GET /api/share/:shareId/data 获取分享数据，3) GET /share/:shareId 访问分享页面，4) 使用shares.json存储分享映射关系（shareId -> sessionId），5) 每个sessionId只生成一次分享ID避免重复",
+      "createdAt": "2025-12-03T17:30:43.016",
+      "updatedAt": "2025-12-03T17:30:43.016"
+    },
+    {
       "id": "notebook-1764501794196_oq8za05zu",
       "filePath": "server.js",
       "note": "⚠️ GIF生成诊断增强（2025-11-30）：1) 添加详细的控制台日志输出（请求参数、处理进度、文件信息），2) 增强错误处理（错误类型、堆栈、自动清理临时文件），3) 输出处理统计（耗时、文件大小、尺寸信息），4) 所有日志使用emoji标记便于快速识别",
@@ -113,6 +127,15 @@
       "note": "✅ 已支持动态行列数：后端兼容marginTop/cropTop两种参数名，支持任意规格（如6×4、7×5、8×4等）的表情版剪切",
       "createdAt": "2025-11-28T10:59:22.336",
       "updatedAt": "2025-11-28T10:59:22.336"
+    }
+  ],
+  "public/share.html": [
+    {
+      "id": "notebook-1764754254461_ituh3l9jx",
+      "filePath": "public/share.html",
+      "note": "✨ 分享页面（2025-12-03）：1) 从URL提取shareId并调用/api/share/:shareId/data获取数据，2) 显示图片网格预览（支持点击放大和单张下载），3) 提供打包下载和返回首页按钮，4) 响应式设计适配移动端，5) 显示分享统计信息（图片数量和创建时间）",
+      "createdAt": "2025-12-03T17:30:54.461",
+      "updatedAt": "2025-12-03T17:30:54.461"
     }
   ]
 }

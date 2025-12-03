@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>照片分享 - 表情包剪切工具</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+        color: #333;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .header {
+        text-align: center;
+        color: white;
+        margin-bottom: 40px;
+      }
+
+      .header h1 {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+      }
+
+      .header p {
+        font-size: 1.1em;
+        opacity: 0.9;
+      }
+
+      .share-info {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        text-align: center;
+      }
+
+      .share-info h2 {
+        color: #667eea;
+        margin-bottom: 15px;
+        font-size: 1.5em;
+      }
+
+      .share-info p {
+        color: #666;
+        font-size: 1em;
+        margin-bottom: 10px;
+      }
+
+      .share-stats {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        margin-top: 20px;
+      }
+
+      .stat-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .stat-value {
+        font-size: 2em;
+        font-weight: bold;
+        color: #667eea;
+      }
+
+      .stat-label {
+        font-size: 0.9em;
+        color: #999;
+        margin-top: 5px;
+      }
+
+      .content {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      }
+
+      .loading {
+        text-align: center;
+        padding: 60px 20px;
+      }
+
+      .loading-spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .error {
+        text-align: center;
+        padding: 60px 20px;
+        color: #e74c3c;
+      }
+
+      .error-icon {
+        font-size: 4em;
+        margin-bottom: 20px;
+      }
+
+      .preview-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 15px;
+        margin-top: 20px;
+      }
+
+      .preview-item {
+        position: relative;
+        background: #f8f9fa;
+        border-radius: 10px;
+        overflow: hidden;
+        aspect-ratio: 1;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .preview-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+      }
+
+      .preview-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        padding: 10px;
+      }
+
+      .preview-item .download-btn {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        background: rgba(102, 126, 234, 0.9);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        opacity: 0;
+        transition: all 0.3s ease;
+        font-size: 18px;
+      }
+
+      .preview-item:hover .download-btn {
+        opacity: 1;
+      }
+
+      .preview-item .download-btn:hover {
+        background: #764ba2;
+        transform: scale(1.1);
+      }
+
+      .actions {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 30px;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        padding: 12px 30px;
+        border: none;
+        border-radius: 25px;
+        font-size: 1em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+      }
+
+      .btn-secondary {
+        background: white;
+        color: #667eea;
+        border: 2px solid #667eea;
+      }
+
+      .btn-secondary:hover {
+        background: #f8f9ff;
+        transform: translateY(-2px);
+      }
+
+      /* 图片预览模态框 */
+      .preview-modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.9);
+        animation: fadeIn 0.3s ease;
+      }
+
+      .preview-modal.active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .preview-modal img {
+        max-width: 90%;
+        max-height: 90%;
+        object-fit: contain;
+        animation: zoomIn 0.3s ease;
+      }
+
+      .close-modal {
+        position: absolute;
+        top: 20px;
+        right: 40px;
+        color: white;
+        font-size: 40px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: color 0.3s ease;
+      }
+
+      .close-modal:hover {
+        color: #667eea;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes zoomIn {
+        from {
+          transform: scale(0.8);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      /* 响应式设计 */
+      @media (max-width: 768px) {
+        .header h1 {
+          font-size: 1.8em;
+        }
+
+        .preview-grid {
+          grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+          gap: 10px;
+        }
+
+        .share-stats {
+          flex-direction: column;
+          gap: 15px;
+        }
+
+        .actions {
+          flex-direction: column;
+        }
+
+        .btn {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+
+      .footer {
+        text-align: center;
+        color: white;
+        margin-top: 30px;
+        opacity: 0.8;
+        font-size: 0.9em;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🎨 照片分享</h1>
+        <p>表情包剪切工具 - 分享页面</p>
+      </div>
+
+      <div class="share-info" id="shareInfo" style="display: none">
+        <h2>📦 分享信息</h2>
+        <div class="share-stats">
+          <div class="stat-item">
+            <div class="stat-value" id="imageCount">0</div>
+            <div class="stat-label">张图片</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="shareDate">-</div>
+            <div class="stat-label">创建时间</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="loading" id="loading">
+          <div class="loading-spinner"></div>
+          <p>正在加载分享内容...</p>
+        </div>
+
+        <div class="error" id="error" style="display: none">
+          <div class="error-icon">⚠️</div>
+          <h2>加载失败</h2>
+          <p id="errorMessage">无法加载分享内容</p>
+        </div>
+
+        <div id="previewContainer" style="display: none">
+          <div class="preview-grid" id="previewGrid"></div>
+          <div class="actions">
+            <button class="btn btn-primary" onclick="downloadAll()">
+              📦 打包下载全部
+            </button>
+            <button class="btn btn-secondary" onclick="goHome()">
+              🏠 返回首页
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <p>Powered by 表情包剪切工具 | Made with ❤️</p>
+      </div>
+    </div>
+
+    <!-- 图片预览模态框 -->
+    <div class="preview-modal" id="previewModal" onclick="closePreview()">
+      <span class="close-modal">&times;</span>
+      <img id="previewImage" src="" alt="预览" />
+    </div>
+
+    <script>
+      let currentSessionId = "";
+      let currentShareId = "";
+
+      // 从URL获取shareId
+      function getShareId() {
+        const path = window.location.pathname;
+        const match = path.match(/\/share\/([^\/]+)/);
+        return match ? match[1] : null;
+      }
+
+      // 加载分享数据
+      async function loadShareData() {
+        const shareId = getShareId();
+        if (!shareId) {
+          showError("无效的分享链接");
+          return;
+        }
+
+        currentShareId = shareId;
+
+        try {
+          const response = await fetch(`/api/share/${shareId}/data`);
+          const data = await response.json();
+
+          if (!data.success) {
+            showError(data.error || "加载失败");
+            return;
+          }
+
+          currentSessionId = data.sessionId;
+          displayShareData(data);
+        } catch (error) {
+          console.error("加载分享数据失败:", error);
+          showError("网络错误，请稍后重试");
+        }
+      }
+
+      // 显示分享数据
+      function displayShareData(data) {
+        // 隐藏加载提示
+        document.getElementById("loading").style.display = "none";
+
+        // 显示分享信息
+        const shareInfo = document.getElementById("shareInfo");
+        shareInfo.style.display = "block";
+
+        document.getElementById("imageCount").textContent = data.count;
+
+        // 格式化创建时间
+        const createdDate = new Date(data.createdAt);
+        document.getElementById("shareDate").textContent =
+          createdDate.toLocaleDateString("zh-CN");
+
+        // 显示预览容器
+        const previewContainer = document.getElementById("previewContainer");
+        previewContainer.style.display = "block";
+
+        // 渲染图片网格
+        const previewGrid = document.getElementById("previewGrid");
+        previewGrid.innerHTML = "";
+
+        data.files.forEach((file) => {
+          const item = document.createElement("div");
+          item.className = "preview-item";
+
+          const img = document.createElement("img");
+          img.src = `/output/${data.sessionId}/${file}`;
+          img.alt = file;
+          img.onclick = (e) => {
+            e.stopPropagation();
+            showPreview(img.src);
+          };
+
+          const downloadBtn = document.createElement("button");
+          downloadBtn.className = "download-btn";
+          downloadBtn.innerHTML = "⬇";
+          downloadBtn.title = "下载";
+          downloadBtn.onclick = (e) => {
+            e.stopPropagation();
+            downloadImage(data.sessionId, file);
+          };
+
+          item.appendChild(img);
+          item.appendChild(downloadBtn);
+          previewGrid.appendChild(item);
+        });
+      }
+
+      // 显示错误
+      function showError(message) {
+        document.getElementById("loading").style.display = "none";
+        const errorDiv = document.getElementById("error");
+        errorDiv.style.display = "block";
+        document.getElementById("errorMessage").textContent = message;
+      }
+
+      // 下载单张图片
+      function downloadImage(sessionId, fileName) {
+        window.location.href = `/download/${sessionId}/${fileName}`;
+      }
+
+      // 下载所有图片
+      function downloadAll() {
+        if (!currentSessionId) return;
+        window.location.href = `/download-all/${currentSessionId}`;
+      }
+
+      // 返回首页
+      function goHome() {
+        window.location.href = "/";
+      }
+
+      // 显示图片预览
+      function showPreview(src) {
+        const modal = document.getElementById("previewModal");
+        const img = document.getElementById("previewImage");
+        img.src = src;
+        modal.classList.add("active");
+      }
+
+      // 关闭预览
+      function closePreview() {
+        const modal = document.getElementById("previewModal");
+        modal.classList.remove("active");
+      }
+
+      // ESC键关闭预览
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          closePreview();
+        }
+      });
+
+      // 页面加载时自动加载数据
+      window.addEventListener("DOMContentLoaded", loadShareData);
+    </script>
+  </body>
+</html>

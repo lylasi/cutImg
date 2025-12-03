@@ -5,6 +5,7 @@ const archiver = require("archiver");
 const fs = require("fs");
 const path = require("path");
 const GifEncoder = require("gif-encoder-2");
+const crypto = require("crypto");
 
 const app = express();
 const PORT = 7788;
@@ -13,12 +14,38 @@ const PORT = 7788;
 const UPLOAD_DIR = path.join(__dirname, "uploads");
 const OUTPUT_DIR = path.join(__dirname, "output");
 const PUBLIC_DIR = path.join(__dirname, "public");
+const SHARES_FILE = path.join(__dirname, "shares.json");
 
 [UPLOAD_DIR, OUTPUT_DIR, PUBLIC_DIR].forEach((dir) => {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }
 });
+
+// 初始化分享数据文件
+if (!fs.existsSync(SHARES_FILE)) {
+  fs.writeFileSync(SHARES_FILE, JSON.stringify({}));
+}
+
+// 读取分享数据
+function readShares() {
+  try {
+    const data = fs.readFileSync(SHARES_FILE, "utf8");
+    return JSON.parse(data);
+  } catch (error) {
+    return {};
+  }
+}
+
+// 保存分享数据
+function saveShares(shares) {
+  fs.writeFileSync(SHARES_FILE, JSON.stringify(shares, null, 2));
+}
+
+// 生成唯一的分享ID
+function generateShareId() {
+  return crypto.randomBytes(4).toString("hex"); // 8位短链接
+}
 
 // 配置文件上传
 const storage = multer.diskStorage({
@@ -560,6 +587,106 @@ app.get("/download-gif/:fileName", (req, res) => {
   }
 
   res.download(filePath, fileName);
+});
+
+/**
+ * 生成分享链接
+ */
+app.post("/api/share/:sessionId", (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    const folderPath = path.join(OUTPUT_DIR, sessionId);
+
+    // 检查会话是否存在
+    if (!fs.existsSync(folderPath)) {
+      return res.status(404).json({ error: "会话不存在" });
+    }
+
+    // 读取现有分享数据
+    const shares = readShares();
+
+    // 检查是否已经为该会话创建了分享
+    let shareId = null;
+    for (const [id, data] of Object.entries(shares)) {
+      if (data.sessionId === sessionId) {
+        shareId = id;
+        break;
+      }
+    }
+
+    // 如果没有现有分享，创建新的
+    if (!shareId) {
+      shareId = generateShareId();
+      shares[shareId] = {
+        sessionId: sessionId,
+        createdAt: new Date().toISOString(),
+      };
+      saveShares(shares);
+    }
+
+    const shareUrl = `http://localhost:${PORT}/share/${shareId}`;
+
+    console.log(`🔗 创建分享链接: ${shareUrl} -> ${sessionId}`);
+
+    res.json({
+      success: true,
+      shareId: shareId,
+      shareUrl: shareUrl,
+      message: "分享链接生成成功",
+    });
+  } catch (error) {
+    console.error("生成分享链接失败:", error);
+    res.status(500).json({ error: "生成分享链接失败" });
+  }
+});
+
+/**
+ * 获取分享数据
+ */
+app.get("/api/share/:shareId/data", (req, res) => {
+  try {
+    const { shareId } = req.params;
+    const shares = readShares();
+
+    if (!shares[shareId]) {
+      return res.status(404).json({ error: "分享不存在" });
+    }
+
+    const sessionId = shares[shareId].sessionId;
+    const folderPath = path.join(OUTPUT_DIR, sessionId);
+
+    if (!fs.existsSync(folderPath)) {
+      return res.status(404).json({ error: "分享的文件已失效" });
+    }
+
+    // 读取文件列表
+    const files = fs
+      .readdirSync(folderPath)
+      .filter((f) => /\.(png|jpg|jpeg|gif|webp)$/i.test(f))
+      .sort();
+
+    res.json({
+      success: true,
+      sessionId: sessionId,
+      count: files.length,
+      files: files,
+      createdAt: shares[shareId].createdAt,
+    });
+  } catch (error) {
+    console.error("获取分享数据失败:", error);
+    res.status(500).json({ error: "获取分享数据失败" });
+  }
+});
+
+/**
+ * 访问分享页面
+ */
+app.get("/share/:shareId", (req, res) => {
+  const sharePage = path.join(PUBLIC_DIR, "share.html");
+  if (!fs.existsSync(sharePage)) {
+    return res.status(404).send("分享页面不存在");
+  }
+  res.sendFile(sharePage);
 });
 
 // 启动服务器

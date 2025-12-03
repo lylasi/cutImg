@@ -1292,6 +1292,9 @@
                 <button class="btn btn-success" onclick="downloadAll()">
                   📦 打包下载全部 (ZIP)
                 </button>
+                <button class="btn btn-primary" onclick="generateShareLink()">
+                  🔗 生成分享链接
+                </button>
               </div>
             </div>
           </div>
@@ -1893,6 +1896,167 @@
       function downloadAll() {
         if (!currentSessionId) return;
         const url = `/download-all/${currentSessionId}`;
+        window.open(url, "_blank");
+      }
+
+      // 生成分享链接
+      async function generateShareLink() {
+        if (!currentSessionId) {
+          showAlert("请先剪切图片后再生成分享链接", "warning");
+          return;
+        }
+
+        try {
+          // 显示加载提示
+          showAlert("正在生成分享链接...", "info");
+
+          const response = await fetch(`/api/share/${currentSessionId}`, {
+            method: "POST",
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            // 显示分享链接对话框
+            showShareDialog(data.shareUrl, data.shareId);
+          } else {
+            showAlert(data.error || "生成分享链接失败", "error");
+          }
+        } catch (error) {
+          console.error("生成分享链接失败:", error);
+          showAlert("网络错误，请稍后重试", "error");
+        }
+      }
+
+      // 显示分享链接对话框
+      function showShareDialog(shareUrl, shareId) {
+        const message = `
+          <div style="text-align: left; padding: 10px;">
+            <h3 style="color: #667eea; margin-bottom: 15px;">🎉 分享链接已生成</h3>
+            <p style="margin-bottom: 10px; color: #666;">您可以通过以下链接分享您的作品：</p>
+            <div style="background: #f8f9ff; padding: 12px; border-radius: 8px; margin: 15px 0; word-break: break-all; font-family: monospace; font-size: 0.95em;">
+              ${shareUrl}
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+              <button onclick="copyShareLink('${shareUrl}')" style="flex: 1; padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                📋 复制链接
+              </button>
+              <button onclick="openShareLink('${shareUrl}')" style="flex: 1; padding: 10px 20px; background: white; color: #667eea; border: 2px solid #667eea; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                🔗 打开链接
+              </button>
+            </div>
+          </div>
+        `;
+
+        // 使用自定义对话框显示
+        showCustomDialog(message);
+      }
+
+      // 显示自定义对话框
+      function showCustomDialog(htmlContent) {
+        // 创建对话框元素
+        const dialog = document.createElement("div");
+        dialog.style.cssText = `
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.6);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 10000;
+          animation: fadeIn 0.3s ease;
+        `;
+
+        const dialogBox = document.createElement("div");
+        dialogBox.style.cssText = `
+          background: white;
+          border-radius: 15px;
+          padding: 30px;
+          max-width: 500px;
+          width: 90%;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+          animation: slideIn 0.3s ease;
+        `;
+
+        dialogBox.innerHTML = htmlContent;
+        dialog.appendChild(dialogBox);
+        document.body.appendChild(dialog);
+
+        // 点击背景关闭
+        dialog.addEventListener("click", (e) => {
+          if (e.target === dialog) {
+            closeCustomDialog(dialog);
+          }
+        });
+
+        // ESC键关闭
+        const escHandler = (e) => {
+          if (e.key === "Escape") {
+            closeCustomDialog(dialog);
+            document.removeEventListener("keydown", escHandler);
+          }
+        };
+        document.addEventListener("keydown", escHandler);
+
+        // 添加动画样式
+        if (!document.getElementById("customDialogStyles")) {
+          const style = document.createElement("style");
+          style.id = "customDialogStyles";
+          style.textContent = `
+            @keyframes fadeIn {
+              from { opacity: 0; }
+              to { opacity: 1; }
+            }
+            @keyframes slideIn {
+              from { transform: translateY(-50px); opacity: 0; }
+              to { transform: translateY(0); opacity: 1; }
+            }
+          `;
+          document.head.appendChild(style);
+        }
+      }
+
+      // 关闭自定义对话框
+      function closeCustomDialog(dialog) {
+        dialog.style.animation = "fadeOut 0.3s ease";
+        setTimeout(() => {
+          if (dialog && dialog.parentNode) {
+            dialog.parentNode.removeChild(dialog);
+          }
+        }, 300);
+      }
+
+      // 复制分享链接
+      function copyShareLink(url) {
+        navigator.clipboard
+          .writeText(url)
+          .then(() => {
+            showAlert("✅ 链接已复制到剪贴板！", "success");
+          })
+          .catch((err) => {
+            console.error("复制失败:", err);
+            // 降级方案：使用传统方法复制
+            const textarea = document.createElement("textarea");
+            textarea.value = url;
+            textarea.style.position = "fixed";
+            textarea.style.opacity = "0";
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+              document.execCommand("copy");
+              showAlert("✅ 链接已复制到剪贴板！", "success");
+            } catch (err) {
+              showAlert("复制失败，请手动复制链接", "error");
+            }
+            document.body.removeChild(textarea);
+          });
+      }
+
+      // 打开分享链接
+      function openShareLink(url) {
         window.open(url, "_blank");
       }
 
