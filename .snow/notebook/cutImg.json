@@ -87,6 +87,20 @@
   ],
   "server.js": [
     {
+      "id": "notebook-1764921563936_6gt7syqml",
+      "filePath": "server.js",
+      "note": "⚠️ 测试环境配置：server.js 末尾使用 if (process.env.NODE_ENV !== 'test') 判断，测试环境下不启动服务器，而是导出 app 供 supertest 使用。module.exports = app 必须在文件末尾",
+      "createdAt": "2025-12-05T15:59:23.936",
+      "updatedAt": "2025-12-05T15:59:23.936"
+    },
+    {
+      "id": "notebook-1764920754223_wmse7cp26",
+      "filePath": "server.js",
+      "note": "⚠️ 安全中间件顺序关键：1) securityHeaders (Helmet) 必须在路由之前，2) rateLimiter 跟在 securityHeaders 之后，3) validateImageFile 在 multer 之后（文件已上传到磁盘），4) errorHandler 必须在所有路由和中间件之后（全局错误捕获）",
+      "createdAt": "2025-12-05T15:45:54.223",
+      "updatedAt": "2025-12-05T15:45:54.223"
+    },
+    {
       "id": "notebook-1764754243016_tjsvz4ht6",
       "filePath": "server.js",
       "note": "✨ 照片分享功能（2025-12-03）：1) POST /api/share/:sessionId 生成唯一分享链接，2) GET /api/share/:shareId/data 获取分享数据，3) GET /share/:shareId 访问分享页面，4) 使用shares.json存储分享映射关系（shareId -> sessionId），5) 每个sessionId只生成一次分享ID避免重复",
@@ -136,6 +150,42 @@
       "note": "✨ 分享页面（2025-12-03）：1) 从URL提取shareId并调用/api/share/:shareId/data获取数据，2) 显示图片网格预览（支持点击放大和单张下载），3) 提供打包下载和返回首页按钮，4) 响应式设计适配移动端，5) 显示分享统计信息（图片数量和创建时间）",
       "createdAt": "2025-12-03T17:30:54.461",
       "updatedAt": "2025-12-03T17:30:54.461"
+    }
+  ],
+  "src/middleware/fileValidator.js": [
+    {
+      "id": "notebook-1764920764898_mnl8mk377",
+      "filePath": "src/middleware/fileValidator.js",
+      "note": "⚠️ 文件验证必须使用 file-type 库读取魔数（magic number）而非依赖 MIME 类型或扩展名，因为恶意用户可以轻易修改这两者。如果验证失败，必须立即删除已上传的文件（fs.unlinkSync）防止磁盘被污染",
+      "createdAt": "2025-12-05T15:46:04.898",
+      "updatedAt": "2025-12-05T15:46:04.898"
+    }
+  ],
+  "src/config/index.js": [
+    {
+      "id": "notebook-1764920777935_9jm3vn38e",
+      "filePath": "src/config/index.js",
+      "note": "⚠️ 配置模块使用 parseInt 确保环境变量转换为数字类型，避免字符串拼接错误。所有配置都有默认值以保证在缺少 .env 文件时仍能正常运行。重要：PORT 必须是数字类型，否则 Express 会启动失败",
+      "createdAt": "2025-12-05T15:46:17.935",
+      "updatedAt": "2025-12-05T15:46:17.935"
+    }
+  ],
+  "tests/api.test.js": [
+    {
+      "id": "notebook-1764921563934_j01qzwesn",
+      "filePath": "tests/api.test.js",
+      "note": "⚠️ 测试超时设置：GIF 生成和图片处理测试需要较长时间 (3-20秒)，Jest testTimeout 已设置为 30000ms。如果测试失败，检查 server.js 是否在测试环境下正确导出 app (process.env.NODE_ENV !== 'test')",
+      "createdAt": "2025-12-05T15:59:23.934",
+      "updatedAt": "2025-12-05T15:59:23.934"
+    }
+  ],
+  "tests/helpers/createTestImage.js": [
+    {
+      "id": "notebook-1764921563935_u5dz3yora",
+      "filePath": "tests/helpers/createTestImage.js",
+      "note": "⚠️ 测试 fixtures 生成：使用 Sharp 生成 SVG 转 PNG 的测试图片，fake.png 使用 Windows PE 魔数 (MZ\\x90\\x00) 模拟恶意文件。createLargeFile() 创建的 11MB 文件用于测试文件大小限制，测试后会自动删除",
+      "createdAt": "2025-12-05T15:59:23.935",
+      "updatedAt": "2025-12-05T15:59:23.935"
     }
   ]
 }
